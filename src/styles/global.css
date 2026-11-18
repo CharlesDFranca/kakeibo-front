@@ -1,0 +1,96 @@
+/* Só usa variáveis de tema (--color-*, --radius-*, --font-*). Nada de hex aqui. */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/*
+ * Escala da interface: o CSS usa rem, então a tela inteira cresce junto com
+ * o tamanho-base. Abaixo de 1024px (tablet/celular) fica em 16px; em notebook
+ * e monitores cresce de forma contínua (1366px ≈ 18px, 1920px ≈ 21px).
+ */
+html {
+    font-size: 16px;
+}
+
+@media (min-width: 1024px) {
+    html {
+        font-size: clamp(16px, 0.55vw + 10.5px, 21px);
+    }
+}
+
+html,
+body,
+#root {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-body);
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-app);
+    background-image: var(--gradient-page);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+    margin: 0;
+    font-family: var(--font-heading);
+}
+
+p {
+    margin: 0;
+}
+
+a {
+    color: var(--color-accent-text);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+/* Lista nativa do select (desktop): sem isso o navegador a desenha em branco, com texto claro */
+select {
+    color-scheme: inherit;
+}
+
+select option,
+select optgroup {
+    background-color: var(--color-bg-surface);
+    color: var(--color-text-primary);
+}
+
+/*
+ * iPhone/Safari dá zoom na página ao focar um campo com fonte menor que 16px e
+ * não volta sozinho: o usuário passa a ter que arrastar para os lados.
+ * Campos com no mínimo 16px evitam o zoom; o resto garante que nada vaze.
+ */
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+input,
+select,
+textarea {
+    font-size: max(16px, 1em);
+}
+
+@media (max-width: 760px) {
+    html,
+    body {
+        overflow-x: hidden;
+    }
+}

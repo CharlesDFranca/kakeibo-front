@@ -1,0 +1,82 @@
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.eyebrow {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+}
+
+.title {
+    font-size: 1.75rem;
+    letter-spacing: -0.02em;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.select select {
+    height: 2.75rem;
+    padding: 0 2.25rem 0 1rem;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-pill);
+    background: var(--color-bg-surface);
+    color: var(--color-text-primary);
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.select select:focus-visible {
+    outline: none;
+    border-color: var(--color-border-focus);
+    box-shadow: var(--shadow-focus);
+}
+
+.plan {
+    padding: 0.375rem 0.75rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-accent-soft);
+    color: var(--color-accent-text);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+}
+
+.avatar {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: var(--color-bg-sidebar);
+    color: var(--color-text-on-brand);
+    font-weight: 700;
+    font-size: 0.875rem;
+}
+
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+}
+
+a.plan,
+a.avatar {
+    text-decoration: none;
+}
+
+a.plan:hover,
+a.avatar:hover {
+    filter: brightness(1.15);
+}

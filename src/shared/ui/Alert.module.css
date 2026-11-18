@@ -1,0 +1,19 @@
+.alert {
+    padding: 0.75rem 0.875rem;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    line-height: 1.4;
+    border: 1px solid transparent;
+}
+
+.danger {
+    background: var(--color-status-danger-soft);
+    color: var(--color-status-danger);
+    border-color: var(--color-status-danger);
+}
+
+.success {
+    background: var(--color-status-success-soft);
+    color: var(--color-status-success);
+    border-color: var(--color-status-success);
+}

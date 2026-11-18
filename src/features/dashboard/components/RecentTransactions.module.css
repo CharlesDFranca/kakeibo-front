@@ -1,0 +1,80 @@
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.icon {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+}
+
+.income {
+    background: var(--color-status-success-soft);
+    color: var(--color-status-success);
+}
+
+.expense {
+    background: var(--color-status-danger-soft);
+    color: var(--color-status-danger);
+}
+
+.neutral {
+    background: var(--color-brand-soft);
+    color: var(--color-text-secondary);
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 0;
+    flex: 1;
+}
+
+.info strong {
+    font-size: 0.875rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.info span {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.amount {
+    font-size: 0.875rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.amount_income {
+    color: var(--color-status-success);
+}
+
+.amount_expense {
+    color: var(--color-status-danger);
+}
+
+.empty {
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+}

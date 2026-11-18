@@ -1,0 +1,52 @@
+.loading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+}
+
+.head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1.125rem;
+}
+
+.amount {
+    font-size: 1.875rem;
+    letter-spacing: -0.02em;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    margin: 0;
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-input);
+}
+
+.list div {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.list dt {
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+}
+
+.list dd {
+    margin: 0;
+    font-weight: 600;
+    text-align: right;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.375rem;
+}

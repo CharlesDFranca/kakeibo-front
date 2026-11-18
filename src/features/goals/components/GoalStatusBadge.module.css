@@ -1,0 +1,27 @@
+.badge {
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.progress {
+    background: var(--color-accent-soft);
+    color: var(--color-accent-text);
+}
+
+.completed {
+    background: var(--color-status-success-soft);
+    color: var(--color-status-success);
+}
+
+.expired {
+    background: var(--color-status-danger-soft);
+    color: var(--color-status-danger);
+}
+
+.cancelled {
+    background: var(--color-brand-soft);
+    color: var(--color-text-muted);
+}

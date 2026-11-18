@@ -1,0 +1,36 @@
+.locked {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.5rem 1rem;
+    border: 1px dashed var(--color-border-strong);
+    border-radius: var(--radius-lg);
+    text-align: center;
+}
+
+.locked p {
+    max-width: 34ch;
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+}
+
+.icon {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: var(--color-brand-soft);
+    color: var(--color-text-secondary);
+}
+
+.badge {
+    margin-top: 0.25rem;
+    padding: 0.3125rem 0.75rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-accent-soft);
+    color: var(--color-accent-text);
+    font-size: 0.75rem;
+    font-weight: 700;
+}

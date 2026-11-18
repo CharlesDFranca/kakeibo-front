@@ -1,0 +1,53 @@
+.backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    background: color-mix(in srgb, var(--color-bg-app) 70%, transparent);
+    backdrop-filter: blur(0.25rem);
+    overflow-y: auto;
+}
+
+.dialog {
+    width: 100%;
+    max-width: 28.75rem;
+    padding: 1.625rem;
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-card);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
+
+.title {
+    font-size: 1.25rem;
+}
+
+.close {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+}
+
+.close:hover {
+    background: var(--color-brand-soft);
+}
+
+.close:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+}

@@ -1,0 +1,76 @@
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13.125rem, 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.goal {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding: 1.125rem;
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-input);
+    border: 1px solid var(--color-border-subtle);
+}
+
+.name {
+    font-size: 1rem;
+}
+
+.amounts {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+}
+
+.progress {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.bar {
+    height: 0.5rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-bg-surface-raised);
+    overflow: hidden;
+}
+
+.bar span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--color-accent-primary);
+    transition: width 0.4s ease;
+}
+
+.days {
+    align-self: flex-start;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-brand-soft);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+}
+
+.message {
+    padding: 0.75rem 0;
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+}
+
+a.name {
+    color: var(--color-text-primary);
+    font-weight: 700;
+}
