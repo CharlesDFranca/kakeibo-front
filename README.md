@@ -115,3 +115,4 @@ Se um componente precisar de um token que não existe, adicione-o em `types.ts` 
 - Sidebar recolhida mostra só ícones; com o mouse (ou foco de teclado) por cima ela se expande sobre o conteúdo, mostrando o nome de cada item. No celular continua como barra inferior.
 - Todo o CSS usa `rem`; o tamanho-base cresce com a tela (`global.css`): 16px até tablet, ≈18px em notebook de 1366px, até 21px em monitores grandes.
 # kakeibo-front
+# kakeibo-api-pds
