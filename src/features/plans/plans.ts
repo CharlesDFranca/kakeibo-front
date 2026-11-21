@@ -1,3 +1,4 @@
+import { t } from '@/shared/i18n';
 import type { Plan } from '@/features/auth/api/auth.api';
 
 export type FeatureKey = 'TRANSFERS' | 'CATEGORY_ANALYSIS' | 'GOALS' | 'NOTIFICATIONS';
@@ -8,21 +9,48 @@ export type FeatureKey = 'TRANSFERS' | 'CATEGORY_ANALYSIS' | 'GOALS' | 'NOTIFICA
  */
 export const PLAN_ORDER: Plan[] = ['FREE', 'PLUS', 'PRO'];
 
+/** Textos resolvidos na leitura (getters), então seguem o idioma atual; o uso `PLAN_INFO[plan].tagline` continua igual. */
 export const PLAN_INFO: Record<Plan, { label: string; tagline: string; features: FeatureKey[] }> = {
-    FREE: { label: 'Free', tagline: 'O essencial para controlar seu dinheiro.', features: [] },
-    PLUS: { label: 'Plus', tagline: 'Mais controle entre suas carteiras.', features: ['TRANSFERS', 'CATEGORY_ANALYSIS'] },
-    PRO: { label: 'Pro', tagline: 'Planejamento completo, com metas e avisos.', features: ['TRANSFERS', 'CATEGORY_ANALYSIS', 'GOALS', 'NOTIFICATIONS'] },
+    FREE: {
+        label: 'Free',
+        get tagline() {
+            return t('plans.tagline.free');
+        },
+        features: [],
+    },
+    PLUS: {
+        label: 'Plus',
+        get tagline() {
+            return t('plans.tagline.plus');
+        },
+        features: ['TRANSFERS', 'CATEGORY_ANALYSIS'],
+    },
+    PRO: {
+        label: 'Pro',
+        get tagline() {
+            return t('plans.tagline.pro');
+        },
+        features: ['TRANSFERS', 'CATEGORY_ANALYSIS', 'GOALS', 'NOTIFICATIONS'],
+    },
 };
 
 export const FEATURE_LABEL: Record<FeatureKey, string> = {
-    TRANSFERS: 'Transferências entre carteiras',
-    CATEGORY_ANALYSIS: 'Análise de despesas por categoria',
-    GOALS: 'Metas financeiras com aportes',
-    NOTIFICATIONS: 'Notificações',
+    get TRANSFERS() {
+        return t('plans.feature.TRANSFERS');
+    },
+    get CATEGORY_ANALYSIS() {
+        return t('plans.feature.CATEGORY_ANALYSIS');
+    },
+    get GOALS() {
+        return t('plans.feature.GOALS');
+    },
+    get NOTIFICATIONS() {
+        return t('plans.feature.NOTIFICATIONS');
+    },
 };
 
 /** Itens que todo plano inclui. */
-export const BASE_FEATURES = ['Carteiras e transações ilimitadas', 'Categorias personalizadas', 'Painel com evolução do saldo'];
+export const baseFeatures = (): string[] => [t('plans.base.wallets'), t('plans.base.categories'), t('plans.base.dashboard')];
 
 export const FEATURE_KEYS: FeatureKey[] = ['TRANSFERS', 'CATEGORY_ANALYSIS', 'GOALS', 'NOTIFICATIONS'];
 

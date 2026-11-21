@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { apiErrorMessage } from '@/shared/api/error-messages';
+import { apiErrorMessage, t } from '@/shared/i18n';
 import { Alert, Button, Modal, TextField } from '@/shared/ui';
 import { goalsApi } from '../api/goals.api';
 import { deadlineToIso, tomorrowDateOnly } from '../status';
@@ -18,7 +18,7 @@ export function ReactivateModal({ goalId, goalName, onClose, onSaved }: Props) {
         e.preventDefault();
         setFormError(null);
         if (!deadline || deadline < minDay) {
-            setError('Escolha um novo prazo a partir de amanhã.');
+            setError(t('goals.reactivate.error'));
             return;
         }
         setError(undefined);
@@ -33,17 +33,17 @@ export function ReactivateModal({ goalId, goalName, onClose, onSaved }: Props) {
     }
 
     return (
-        <Modal title={`Reativar ${goalName}`} onClose={onClose}>
+        <Modal title={t('goals.reactivate.title', { name: goalName })} onClose={onClose}>
             <form className={styles.form} onSubmit={handleSubmit} noValidate>
                 {formError && <Alert tone="danger">{formError}</Alert>}
-                <p className={styles.note}>A meta volta a ficar em andamento, com o que já foi aportado, até o novo prazo.</p>
-                <TextField label="Novo prazo" type="date" min={minDay} value={deadline} onChange={(e) => setDeadline(e.target.value)} error={error} />
+                <p className={styles.note}>{t('goals.reactivate.note')}</p>
+                <TextField label={t('goals.reactivate.deadline')} type="date" min={minDay} value={deadline} onChange={(e) => setDeadline(e.target.value)} error={error} />
                 <div className={styles.actions}>
                     <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>
-                        Cancelar
+                        {t('goals.form.cancel')}
                     </Button>
                     <Button type="submit" loading={saving}>
-                        Reativar
+                        {t('goals.reactivate.submit')}
                     </Button>
                 </div>
             </form>

@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { apiErrorMessage } from '@/shared/api/error-messages';
+import { apiErrorMessage, t } from '@/shared/i18n';
 import { parseMoneyInput } from '@/shared/format/money-input';
 import { Alert, Button, Modal, TextField } from '@/shared/ui';
 import { walletsApi, type Wallet } from '../api/wallets.api';
@@ -25,10 +25,10 @@ export function WalletFormModal({ wallet, onClose, onSaved }: Props) {
         setFormError(null);
 
         const found: typeof errors = {};
-        if (!name.trim()) found.name = 'Informe um nome.';
-        if (name.trim().length > 100) found.name = 'O nome pode ter no máximo 100 caracteres.';
+        if (!name.trim()) found.name = t('wallets.form.error.nameRequired');
+        if (name.trim().length > 100) found.name = t('wallets.form.error.nameTooLong');
         const amount = editing ? '0.00' : parseMoneyInput(balance || '0');
-        if (!editing && amount === null) found.balance = 'Informe um valor válido, como 1.500,00.';
+        if (!editing && amount === null) found.balance = t('wallets.form.error.balanceInvalid');
         setErrors(found);
         if (Object.keys(found).length > 0) return;
 
@@ -36,10 +36,10 @@ export function WalletFormModal({ wallet, onClose, onSaved }: Props) {
         try {
             if (editing) {
                 await walletsApi.rename(wallet.id, name.trim());
-                onSaved('Carteira renomeada.');
+                onSaved(t('wallets.toast.renamed'));
             } else {
                 await walletsApi.create({ name: name.trim(), balance: amount! });
-                onSaved('Carteira criada.');
+                onSaved(t('wallets.toast.created'));
             }
         } catch (error) {
             setFormError(apiErrorMessage(error));
@@ -48,13 +48,13 @@ export function WalletFormModal({ wallet, onClose, onSaved }: Props) {
     }
 
     return (
-        <Modal title={editing ? 'Renomear carteira' : 'Nova carteira'} onClose={onClose}>
+        <Modal title={editing ? t('wallets.form.titleEdit') : t('wallets.form.titleNew')} onClose={onClose}>
             <form className={styles.form} onSubmit={handleSubmit} noValidate>
                 {formError && <Alert tone="danger">{formError}</Alert>}
 
                 <TextField
-                    label="Nome"
-                    placeholder="Ex.: Nubank, Dinheiro, Poupança"
+                    label={t('wallets.form.name')}
+                    placeholder={t('wallets.form.namePlaceholder')}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     error={errors.name}
@@ -63,22 +63,22 @@ export function WalletFormModal({ wallet, onClose, onSaved }: Props) {
 
                 {!editing && (
                     <TextField
-                        label="Saldo inicial"
+                        label={t('wallets.form.balance')}
                         inputMode="decimal"
-                        placeholder="0,00"
+                        placeholder={t('wallets.form.balancePlaceholder')}
                         value={balance}
                         onChange={(e) => setBalance(e.target.value)}
                         error={errors.balance}
-                        hint="O saldo inicial vira a primeira movimentação da carteira."
+                        hint={t('wallets.form.balanceHint')}
                     />
                 )}
 
                 <div className={styles.actions}>
                     <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>
-                        Cancelar
+                        {t('wallets.form.cancel')}
                     </Button>
                     <Button type="submit" loading={saving}>
-                        {editing ? 'Salvar' : 'Criar carteira'}
+                        {editing ? t('wallets.form.save') : t('wallets.form.create')}
                     </Button>
                 </div>
             </form>

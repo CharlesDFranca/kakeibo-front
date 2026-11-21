@@ -1,4 +1,5 @@
 import { useId, useState, type MouseEvent } from 'react';
+import { t } from '@/shared/i18n';
 import styles from './AreaChart.module.css';
 
 export type AreaPoint = { label: string; value: number };
@@ -61,7 +62,7 @@ export function AreaChart({ data, format, height = 200 }: Props) {
                 viewBox={`0 0 ${W} ${H}`}
                 preserveAspectRatio="none"
                 role="img"
-                aria-label="Evolução do saldo"
+                aria-label={t('dashboard.chart.balanceEvolution')}
                 onMouseMove={handleMove}
                 onMouseLeave={() => setActive(null)}
             >

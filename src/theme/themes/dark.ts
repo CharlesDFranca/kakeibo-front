@@ -10,7 +10,7 @@ const mix = (a: string, b: string, pctOfA: number) =>
 
 export const darkTheme: Theme = {
     id: 'dark',
-    label: 'Escuro',
+    label: 'Ameixa',
     colorScheme: 'dark',
     color: {
         bg: {
@@ -28,7 +28,7 @@ export const darkTheme: Theme = {
         text: {
             primary: p.ice,
             secondary: mix(p.ice, p.navy, 78),
-            muted: mix(p.mauve, p.navy, 62),
+            muted: mix(p.mauve, p.navy, 72),
             onBrand: p.ice,
             onAccent: p.navy,
         },

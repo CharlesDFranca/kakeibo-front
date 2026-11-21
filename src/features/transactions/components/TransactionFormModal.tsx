@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { apiErrorMessage } from '@/shared/api/error-messages';
+import { apiErrorMessage, categoryLabel, t } from '@/shared/i18n';
 import { formatCurrency } from '@/shared/format/format';
 import { parseMoneyInput } from '@/shared/format/money-input';
 import { toDateOnly } from '@/features/dashboard/periods';
@@ -60,11 +60,11 @@ export function TransactionFormModal({ wallets, categories, onCreateCategory, on
 
         const parsed = parseMoneyInput(amount);
         const found: Errors = {};
-        if (parsed === null || Number(parsed) <= 0) found.amount = 'Informe um valor maior que zero, como 49,90.';
-        if (!date) found.date = 'Informe a data.';
-        else if (date > today) found.date = 'A data não pode ser futura.';
-        if (!walletId) found.walletId = 'Escolha a carteira.';
-        if (!categoryId) found.categoryId = 'Escolha a categoria.';
+        if (parsed === null || Number(parsed) <= 0) found.amount = t('transactions.form.error.amount');
+        if (!date) found.date = t('transactions.form.error.date');
+        else if (date > today) found.date = t('transactions.form.error.dateFuture');
+        if (!walletId) found.walletId = t('transactions.form.error.wallet');
+        if (!categoryId) found.categoryId = t('transactions.form.error.category');
         setErrors(found);
         if (Object.keys(found).length > 0) return;
 
@@ -88,16 +88,16 @@ export function TransactionFormModal({ wallets, categories, onCreateCategory, on
 
     if (wallets.length === 0) {
         return (
-            <Modal title="Nova transação" onClose={onClose}>
-                <p className={styles.notice}>
-                    Você precisa de uma carteira antes de registrar transações.
+            <Modal title={t('transactions.form.title')} onClose={onClose}>
+                <p className={styles.notice} data-tour="modal-notice">
+                    {t('transactions.form.noWallet')}
                 </p>
                 <div className={styles.actions}>
                     <Button variant="ghost" onClick={onClose}>
-                        Fechar
+                        {t('transactions.form.close')}
                     </Button>
                     <Link to="/carteiras" className={styles.linkButton}>
-                        Criar carteira
+                        {t('transactions.form.createWallet')}
                     </Link>
                 </div>
             </Modal>
@@ -105,15 +105,15 @@ export function TransactionFormModal({ wallets, categories, onCreateCategory, on
     }
 
     return (
-        <Modal title="Nova transação" onClose={onClose}>
+        <Modal title={t('transactions.form.title')} onClose={onClose}>
             <form className={styles.form} onSubmit={handleSubmit} noValidate>
                 {formError && <Alert tone="danger">{formError}</Alert>}
 
-                <div className={styles.segmented} role="group" aria-label="Tipo da transação">
+                <div className={styles.segmented} role="group" aria-label={t('transactions.form.kind')} data-tour="tx-type">
                     {(
                         [
-                            ['EXPENSE', 'Despesa'],
-                            ['INCOME', 'Receita'],
+                            ['EXPENSE', t('transactions.type.EXPENSE')],
+                            ['INCOME', t('transactions.type.INCOME')],
                         ] as const
                     ).map(([value, label]) => (
                         <button
@@ -129,22 +129,22 @@ export function TransactionFormModal({ wallets, categories, onCreateCategory, on
                 </div>
 
                 <TextField
-                    label="Valor"
+                    label={t('transactions.form.amount')}
                     inputMode="decimal"
-                    placeholder="0,00"
+                    placeholder={t('transactions.form.amountPlaceholder')}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     error={errors.amount}
                 />
                 <TextField
-                    label="Descrição (opcional)"
-                    placeholder="Ex.: Mercado da semana"
+                    label={t('transactions.form.description')}
+                    placeholder={t('transactions.form.descriptionPlaceholder')}
                     maxLength={200}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                 />
                 <TextField
-                    label="Data"
+                    label={t('transactions.form.date')}
                     type="date"
                     max={today}
                     value={date}
@@ -152,44 +152,44 @@ export function TransactionFormModal({ wallets, categories, onCreateCategory, on
                     error={errors.date}
                 />
                 <SelectField
-                    label="Carteira"
-                    placeholder="Selecione"
+                    label={t('transactions.form.wallet')}
+                    placeholder={t('transactions.form.select')}
                     value={walletId}
                     onChange={(e) => setWalletId(e.target.value)}
                     options={wallets.map((w) => ({ value: w.id, label: w.name }))}
                     error={errors.walletId}
-                    hint={wallet ? `Saldo atual: ${formatCurrency(wallet.balance)}` : undefined}
+                    hint={wallet ? t('transactions.form.walletBalance', { amount: formatCurrency(wallet.balance) }) : undefined}
                 />
 
                 {newCategory === null ? (
-                    <div className={styles.categoryRow}>
+                    <div className={styles.categoryRow} data-tour="tx-category">
                         <SelectField
-                            label="Categoria"
-                            placeholder="Selecione"
+                            label={t('transactions.form.category')}
+                            placeholder={t('transactions.form.select')}
                             value={categoryId}
                             onChange={(e) => setCategoryId(e.target.value)}
-                            options={categories.map((c) => ({ value: c.id, label: c.name }))}
+                            options={categories.map((c) => ({ value: c.id, label: categoryLabel(c.name) }))}
                             error={errors.categoryId}
                         />
                         <button type="button" className={styles.link} onClick={() => setNewCategory('')}>
-                            + Nova categoria
+                            {t('transactions.form.newCategoryLink')}
                         </button>
                     </div>
                 ) : (
                     <div className={styles.newCategory}>
                         <TextField
-                            label="Nova categoria"
-                            placeholder="Ex.: Pets"
+                            label={t('transactions.form.newCategory')}
+                            placeholder={t('transactions.form.newCategoryPlaceholder')}
                             maxLength={100}
                             value={newCategory}
                             onChange={(e) => setNewCategory(e.target.value)}
                         />
                         <div className={styles.newCategoryActions}>
                             <Button type="button" variant="ghost" onClick={() => setNewCategory(null)} disabled={creatingCategory}>
-                                Cancelar
+                                {t('transactions.form.cancel')}
                             </Button>
                             <Button type="button" onClick={() => void handleCreateCategory()} loading={creatingCategory}>
-                                Criar categoria
+                                {t('transactions.form.createCategory')}
                             </Button>
                         </div>
                     </div>
@@ -197,10 +197,10 @@ export function TransactionFormModal({ wallets, categories, onCreateCategory, on
 
                 <div className={styles.actions}>
                     <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>
-                        Cancelar
+                        {t('transactions.form.cancel')}
                     </Button>
                     <Button type="submit" loading={saving}>
-                        Registrar
+                        {t('transactions.form.submit')}
                     </Button>
                 </div>
             </form>

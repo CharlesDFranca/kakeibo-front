@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { apiErrorMessage } from '@/shared/api/error-messages';
 import { formatCurrency, formatLocalDate } from '@/shared/format/format';
+import { apiErrorMessage, intlTag, t } from '@/shared/i18n';
 import { PageHeader } from '@/shared/layout/PageHeader';
 import { Alert, Button, ConfirmDialog, EmptyState, LockedFeature, Skeleton, TargetIcon, useToast } from '@/shared/ui';
 import { Card } from '@/features/dashboard/components/Card';
@@ -17,7 +17,7 @@ import { useGoal } from './hooks/useGoals';
 import { progressOf, remainingOf } from './status';
 import styles from './GoalDetailPage.module.css';
 
-const dateTime = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'medium', timeStyle: 'short' });
+const formatDateTime = (iso: string) => new Intl.DateTimeFormat(intlTag(), { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso));
 
 type Dialog = 'deposit' | 'rename' | 'cancel' | 'reactivate' | { revert: GoalMovement } | null;
 
@@ -28,9 +28,9 @@ export function GoalDetailPage() {
     if (!allowed) {
         return (
             <>
-                <PageHeader eyebrow="Planejamento" title="Meta" />
+                <PageHeader eyebrow={t('goals.eyebrow')} title={t('goals.detail.title')} />
                 <Card>
-                    <LockedFeature feature="Metas financeiras" plan="Pro" description="Crie metas com prazo e acompanhe o progresso." />
+                    <LockedFeature feature={t('goals.locked.feature')} plan="Pro" description={t('goals.detail.locked.description')} />
                 </Card>
             </>
         );
@@ -47,7 +47,7 @@ function GoalDetail({ id }: { id: string }) {
     const [busy, setBusy] = useState(false);
 
     const walletList = wallets.state.status === 'ready' ? wallets.state.data : [];
-    const walletName = (walletId: string) => walletList.find((w) => w.id === walletId)?.name ?? 'Carteira removida';
+    const walletName = (walletId: string) => walletList.find((w) => w.id === walletId)?.name ?? t('goals.wallet.removed');
     const close = () => setDialog(null);
 
     function refresh(message: string) {
@@ -74,7 +74,7 @@ function GoalDetail({ id }: { id: string }) {
     if (state.status === 'loading') {
         return (
             <>
-                <PageHeader eyebrow="Planejamento" title="Meta" />
+                <PageHeader eyebrow={t('goals.eyebrow')} title={t('goals.detail.title')} />
                 <Skeleton height={260} radius="var(--radius-xl)" />
             </>
         );
@@ -83,13 +83,13 @@ function GoalDetail({ id }: { id: string }) {
     if (state.status === 'error') {
         return (
             <>
-                <PageHeader eyebrow="Planejamento" title="Meta" />
+                <PageHeader eyebrow={t('goals.eyebrow')} title={t('goals.detail.title')} />
                 <div className={styles.error}>
                     <Alert tone="danger">{state.message}</Alert>
                     <Button variant="ghost" onClick={reload}>
-                        Tentar novamente
+                        {t('goals.retry')}
                     </Button>
-                    <Link to="/metas">Voltar para as metas</Link>
+                    <Link to="/metas">{t('goals.detail.backToGoals')}</Link>
                 </div>
             </>
         );
@@ -103,16 +103,18 @@ function GoalDetail({ id }: { id: string }) {
 
     const actions = (
         <>
-            {inProgress && remaining > 0 && <Button onClick={() => setDialog('deposit')}>Aportar</Button>}
-            {goal.status === 'EXPIRED' && <Button onClick={() => setDialog('reactivate')}>Reativar</Button>}
+            {inProgress && remaining > 0 && <Button onClick={() => setDialog('deposit')} data-tour="goal-deposit">
+                    {t('goals.detail.deposit')}
+                </Button>}
+            {goal.status === 'EXPIRED' && <Button onClick={() => setDialog('reactivate')}>{t('goals.detail.reactivate')}</Button>}
             {goal.status !== 'CANCELLED' && (
-                <Button variant="ghost" onClick={() => setDialog('rename')}>
-                    Renomear
+                <Button variant="ghost" onClick={() => setDialog('rename')} data-tour="goal-rename">
+                    {t('goals.detail.rename')}
                 </Button>
             )}
             {(inProgress || goal.status === 'EXPIRED') && (
-                <Button variant="ghost" onClick={() => setDialog('cancel')}>
-                    Cancelar meta
+                <Button variant="ghost" onClick={() => setDialog('cancel')} data-tour="goal-cancel">
+                    {t('goals.detail.cancel')}
                 </Button>
             )}
         </>
@@ -120,42 +122,42 @@ function GoalDetail({ id }: { id: string }) {
 
     return (
         <>
-            <PageHeader eyebrow="Metas" title={goal.name} actions={actions} />
+            <PageHeader eyebrow={t('goals.title')} title={goal.name} actions={actions} />
             <Link to="/metas" className={styles.back}>
-                ← Todas as metas
+                {t('goals.detail.back')}
             </Link>
 
             <div className={styles.layout} aria-busy={state.refreshing}>
-                <Card tone="brand">
+                <Card tone="brand" tour="goal-summary">
                     <div className={styles.summaryHead}>
-                        <span>Valor alcançado</span>
+                        <span>{t('goals.detail.reached')}</span>
                         <GoalStatusBadge status={goal.status} />
                     </div>
                     <strong className={styles.current}>{formatCurrency(goal.currentAmount)}</strong>
-                    <span className={styles.target}>de {formatCurrency(goal.targetAmount)}</span>
+                    <span className={styles.target}>{t('goals.detail.of', { target: formatCurrency(goal.targetAmount) })}</span>
                     <div className={styles.bar}>
-                        <ProgressBar percent={pct} label="Progresso da meta" />
+                        <ProgressBar percent={pct} label={t('goals.detail.progressAria')} />
                     </div>
                     <dl className={styles.facts}>
                         <div>
-                            <dt>Progresso</dt>
+                            <dt>{t('goals.detail.progress')}</dt>
                             <dd>{pct}%</dd>
                         </div>
                         <div>
-                            <dt>Falta</dt>
+                            <dt>{t('goals.detail.remaining')}</dt>
                             <dd>{formatCurrency(remaining)}</dd>
                         </div>
                         <div>
-                            <dt>Prazo</dt>
-                            <dd>{goal.deadline ? formatLocalDate(goal.deadline) : 'Sem prazo'}</dd>
+                            <dt>{t('goals.detail.deadline')}</dt>
+                            <dd>{goal.deadline ? formatLocalDate(goal.deadline) : t('goals.detail.noDeadline')}</dd>
                         </div>
                     </dl>
                 </Card>
 
-                <Card title="Histórico de movimentações">
+                <Card title={t('goals.detail.history')} tour="goal-history">
                     {movements.length === 0 ? (
-                        <EmptyState icon={<TargetIcon size={26} />} title="Nenhum aporte ainda">
-                            {inProgress ? 'Use "Aportar" para reservar dinheiro de uma carteira nesta meta.' : 'Esta meta não recebeu aportes.'}
+                        <EmptyState icon={<TargetIcon size={26} />} title={t('goals.detail.emptyHistory.title')}>
+                            {inProgress ? t('goals.detail.emptyHistory.active') : t('goals.detail.emptyHistory.inactive')}
                         </EmptyState>
                     ) : (
                         <ul className={styles.list}>
@@ -165,10 +167,10 @@ function GoalDetail({ id }: { id: string }) {
                                 return (
                                     <li key={m.id} className={styles.item}>
                                         <div className={styles.info}>
-                                            <strong>{isDeposit ? 'Aporte' : 'Estorno'}</strong>
+                                            <strong>{t(isDeposit ? 'goals.movement.DEPOSIT' : 'goals.movement.WITHDRAW')}</strong>
                                             <span>
-                                                {walletName(m.walletId)} · {dateTime.format(new Date(m.createdAt))}
-                                                {m.reverted && ' · estornado'}
+                                                {walletName(m.walletId)} · {formatDateTime(m.createdAt)}
+                                                {m.reverted && ` · ${t('goals.movement.reverted')}`}
                                             </span>
                                         </div>
                                         <span className={`${styles.amount} ${isDeposit ? (m.reverted ? styles.struck : styles.in) : styles.out}`}>
@@ -176,8 +178,8 @@ function GoalDetail({ id }: { id: string }) {
                                             {formatCurrency(m.amount)}
                                         </span>
                                         {canRevert ? (
-                                            <Button variant="ghost" onClick={() => setDialog({ revert: m })}>
-                                                Estornar
+                                            <Button variant="ghost" onClick={() => setDialog({ revert: m })} data-tour="goal-revert">
+                                                {t('goals.movement.revert')}
                                             </Button>
                                         ) : (
                                             <span className={styles.spacer} />
@@ -197,31 +199,37 @@ function GoalDetail({ id }: { id: string }) {
                     remaining={remaining}
                     wallets={walletList}
                     onClose={close}
-                    onSaved={() => refresh('Aporte realizado.')}
+                    onSaved={() => refresh(t('goals.toast.deposited'))}
                 />
             )}
             {dialog === 'rename' && <GoalFormModal goal={{ id, name: goal.name }} onClose={close} onSaved={refresh} />}
-            {dialog === 'reactivate' && <ReactivateModal goalId={id} goalName={goal.name} onClose={close} onSaved={() => refresh('Meta reativada.')} />}
+            {dialog === 'reactivate' && <ReactivateModal goalId={id} goalName={goal.name} onClose={close} onSaved={() => refresh(t('goals.toast.reactivated'))} />}
             {dialog === 'cancel' && (
                 <ConfirmDialog
-                    title="Cancelar meta"
-                    confirmLabel="Cancelar meta"
+                    title={t('goals.cancelDialog.title')}
+                    confirmLabel={t('goals.detail.cancel')}
                     loading={busy}
                     onCancel={close}
-                    onConfirm={() => void run(() => goalsApi.cancel(id), 'Meta cancelada. Os aportes voltaram às carteiras.')}
+                    onConfirm={() => void run(() => goalsApi.cancel(id), t('goals.toast.cancelled'))}
                 >
-                    Cancelar <strong>{goal.name}</strong>? Todos os aportes ativos ({formatCurrency(goal.currentAmount)}) voltam para as carteiras de origem. Uma meta cancelada não pode ser reativada.
+                    {t('goals.cancelDialog.a')}
+                    <strong>{goal.name}</strong>
+                    {t('goals.cancelDialog.b', { amount: formatCurrency(goal.currentAmount) })}
                 </ConfirmDialog>
             )}
             {dialog !== null && typeof dialog === 'object' && (
                 <ConfirmDialog
-                    title="Estornar aporte"
-                    confirmLabel="Estornar"
+                    title={t('goals.revertDialog.title')}
+                    confirmLabel={t('goals.revertDialog.confirm')}
                     loading={busy}
                     onCancel={close}
-                    onConfirm={() => void run(() => goalsApi.revertDeposit(id, dialog.revert.id), 'Aporte estornado.')}
+                    onConfirm={() => void run(() => goalsApi.revertDeposit(id, dialog.revert.id), t('goals.toast.depositReverted'))}
                 >
-                    Devolver <strong>{formatCurrency(dialog.revert.amount)}</strong> para <strong>{walletName(dialog.revert.walletId)}</strong>?
+                    {t('goals.revertDialog.a')}
+                    <strong>{formatCurrency(dialog.revert.amount)}</strong>
+                    {t('goals.revertDialog.b')}
+                    <strong>{walletName(dialog.revert.walletId)}</strong>
+                    {t('goals.revertDialog.c')}
                 </ConfirmDialog>
             )}
         </>

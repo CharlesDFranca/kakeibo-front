@@ -5,9 +5,9 @@ Front-end do Kakeibo em React + TypeScript (Vite). Etapas prontas: login, cadast
 ## Como rodar
 
 ```bash
-cp .env.example .env     # VITE_API_URL=http://localhost:3000
+cp .env.example .env     # VITE_API_URL fica vazio: a API é chamada em /api
 npm install
-npm run dev              # http://localhost:5173 (a API só libera CORS para essa origem)
+npm run dev              # http://localhost:5173 (o Vite repassa `/api/*` para a API em `localhost:3000`)
 ```
 
 ## Estrutura
@@ -110,9 +110,40 @@ Se um componente precisar de um token que não existe, adicione-o em `types.ts` 
 
 ## Temas e escala
 
-- 7 temas (`src/theme/themes`): Escuro (padrão), Prisma, Lagoa, Noturno (escuros) e Névoa, Carmim, Musgo (claros). Cada tema extra é só uma lista de cores em `themes/extra.ts`; `themes/factory.ts` deriva bordas, gradientes e gráficos. A escolha fica em Perfil → Aparência.
+- 9 temas (`src/theme/themes`): Ameixa (padrão), Vinho, Lagoa, Noturno (escuros), Névoa, Maré, Carmim, Musgo (claros) e Alto contraste. Cada tema extra é só uma lista de cores em `themes/extra.ts`; `themes/factory.ts` deriva bordas, gradientes e gráficos. A escolha fica em Perfil → Aparência. Todos os pares de texto/fundo têm contraste mínimo de 4,5:1 (WCAG AA). O **Alto contraste** segue o eMAG/WCAG: fundo preto, texto branco (7:1 ou mais), links e destaques em amarelo, bordas e foco bem visíveis, em `styles/high-contrast.css`.
+- Dentro de cartões coloridos (`tone="brand"`/`"accent"`) os tokens de texto são redefinidos a partir da cor do cartão, para não ficarem claros sobre claro em temas claros.
 - Para criar outro tema: adicionar a paleta em `palettes/extra.ts`, um `buildTheme({...})` em `extra.ts` e listá-lo em `themes/index.ts`.
 - Sidebar recolhida mostra só ícones; com o mouse (ou foco de teclado) por cima ela se expande sobre o conteúdo, mostrando o nome de cada item. No celular continua como barra inferior.
 - Todo o CSS usa `rem`; o tamanho-base cresce com a tela (`global.css`): 16px até tablet, ≈18px em notebook de 1366px, até 21px em monitores grandes.
 # kakeibo-front
 # kakeibo-api-pds
+
+## Cookie de sessão e deploy (Vercel + Render)
+
+O cookie `session` é `httpOnly`. Com o front na Vercel e a API no Render, são **sites diferentes**, e Safari (ITP) e Chrome bloqueiam cookie de terceiros (`SameSite=None`). Por isso o front chama a API em **`/api`**, no próprio domínio:
+
+- Produção: `vercel.json` repassa `/api/:path*` para `https://kakeibo-api-pds.onrender.com/:path*`. O navegador só enxerga a Vercel, então o cookie é do próprio site (first-party) e a API pode usar `SameSite=Lax`.
+- Desenvolvimento: `vite.config.ts` faz o mesmo para `http://localhost:3000` (`API_PROXY_TARGET` muda o destino).
+- Na Vercel, **não defina `VITE_API_URL`** (ou deixe vazio). Se definir, o front volta a chamar o Render direto e o problema retorna.
+- Na API: `COOKIE_SAMESITE` (padrão `lax`) e `COOKIE_SECURE` (padrão `true`; use `false` só em `http://localhost`, principalmente no Safari).
+- Limite: o Render gratuito "dorme" e leva dezenas de segundos para acordar; a Vercel pode devolver 504 nessa primeira chamada. Recarregar resolve.
+
+## Tutoriais por tela
+
+`src/features/tutorial/` tem um tour guiado "com holofote" para cada tela: escurece o resto, destaca o elemento e coloca uma caixa curta colada nele. Sem dependências externas.
+
+- **Um tutorial por tela** (`dashboard`, `wallets`, `transactions`, `transfers`, `goals`, `goal`, `notifications`, `plans`, `profile`), cerca de 30 caixas no total. O do Painel começa com as boas-vindas (explica o método Kakeibo) e mostra o menu, que é a base da navegação. Os outros vão direto ao ponto. Itens vizinhos do mesmo contexto são explicados juntos, e cada formulário (modal) é uma caixa só (o tour abre o modal de verdade e fecha).
+- **Quando abrem:** o tutorial de uma tela abre sozinho na primeira vez que o usuário a visita; ao terminar, nada leva a outra tela. Um tutorial que já abriu na sessão não reabre sozinho.
+- **Registro no backend:** os já vistos ficam em `seenTutorials` (`GET /users/me`), então valem em qualquer navegador. `PATCH /users/me/tutorials` marca um como visto e `DELETE /users/me/tutorials` zera todos.
+- **Rever:** **Perfil → Tutoriais** lista cada um com "Rever" (leva à tela e mostra o tutorial) e "Recomeçar todos" (zera tudo e volta ao Painel, como na primeira visita). Telas que o plano não inclui não aparecem na lista; se o usuário perder o plano, o tutorial dela vira uma caixa de aviso.
+- **Dados de exemplo (modo demonstração):** enquanto um tour está aberto, as telas não chamam a API; `demo.ts` responde na hora com carteiras, transações, metas, transferências e notificações fictícias (`setDemoResolver` em `http-client.ts`). Assim o tour é instantâneo e funciona mesmo para quem não tem nada cadastrado (a meta de exemplo mostra o botão Aportar). Sessão e usuário (`/auth`, `/users`) continuam reais e nada do tour grava dados. Ao terminar, volta à tela de origem com os dados reais.
+- **Controles:** Próximo/Voltar, **Sair**, `←`/`→` e `Esc`. Cliques fora da caixa ficam bloqueados enquanto o tour está aberto. No celular a caixa fica logo abaixo (ou acima) do destaque, sem cobri-lo.
+- **Editar:** o roteiro está só em `steps.tsx` (o campo `screen` de cada passo é o id do tutorial). Os alvos são atributos `data-tour="..."` nas telas. Se mudar o formato de alguma resposta da API, ajuste também `demo.ts`. Para criar um tutorial novo, inclua o id em `SCREENS`/`TUTORIAL_ORDER` e em `TUTORIAL_IDS` na API (`identity/domain/tutorial-ids.ts`).
+
+## Idiomas (português e inglês)
+
+- `src/shared/i18n/`: `t('chave', { param })`, `tn('chave', n)` (plural: `chave.one`/`chave.other`), `useI18n()`. O idioma fica em `localStorage` (padrão: o do navegador, se for pt ou en); troca em Perfil → Idioma e remonta as telas.
+- Os textos ficam em `messages/<assunto>.ts`, cada um com `pt` (referência) e `en` com as mesmas chaves (o TypeScript cobra as que faltam). Para um idioma novo: registre em `locales.ts`, acrescente a versão em cada arquivo de `messages/` e em `messages/index.ts`.
+- Textos calculados no topo de um módulo não trocam de idioma: use funções avaliadas na renderização.
+- **Textos vindos da API** passam por `shared/i18n/api-text.ts`: mensagens de erro (pelo `code`, nunca pelo texto em inglês da API), categorias do sistema (`transfer`, `opening balance`, `adjustment`), descrições automáticas ("Saldo inicial", "Transferência") e notificações. Código de erro novo na API: acrescente `error.<CODIGO>` em `messages/api.ts`; se faltar, o app mostra uma mensagem genérica.
+- Datas e números seguem o idioma (`shared/format/format.ts`); a moeda é sempre real. Valores digitados aceitam `1.234,56` e `1,234.56`.

@@ -1,8 +1,14 @@
 .layout {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(18.75rem, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1.25rem;
-    align-items: start;
+    align-items: stretch; /* os cartões de uma linha têm a mesma altura */
+}
+
+@media (max-width: 860px) {
+    .layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 
 .identity {
@@ -93,25 +99,36 @@
 }
 
 .themes {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
     gap: 0.625rem;
 }
 
 .theme {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.625rem 1rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.875rem;
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-md);
     cursor: pointer;
     font-weight: 600;
-    font-size: 0.875rem;
+    line-height: 1.2;
 }
 
+/* o botão de opção fica invisível: o cartão inteiro é a opção, e o foco do teclado aparece na borda dele */
 .theme input {
-    accent-color: var(--color-accent-primary);
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+.theme:has(input:focus-visible) {
+    box-shadow: var(--shadow-focus);
 }
 
 .themeActive {
@@ -148,4 +165,60 @@
 
 .swatch i:first-child {
     margin-left: 0;
+}
+
+.tutorials {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+    gap: 0.625rem;
+    margin: 0 0 1rem;
+    padding: 0;
+    list-style: none;
+}
+
+.tutorials li {
+    display: contents;
+}
+
+.tutorialBtn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem 0.875rem;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+
+.tutorialBtn:hover {
+    background: var(--color-accent-soft);
+}
+
+.tutorialBtn:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+}
+
+.tutorialName {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-weight: 600;
+}
+
+.newTag {
+    padding: 0.0625rem 0.5rem;
+    border-radius: 999px;
+    background: var(--color-accent-primary);
+    color: var(--color-text-on-accent);
+    font-size: 0.75rem;
+    font-style: normal;
+    font-weight: 700;
 }

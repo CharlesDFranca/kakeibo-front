@@ -20,7 +20,7 @@ export class ApiError extends Error {
 
 export class NetworkError extends Error {
     constructor() {
-        super('Não foi possível conectar ao servidor.');
+        super('Network error'); // o texto exibido vem de apiErrorMessage (idioma atual)
         this.name = 'NetworkError';
     }
 }

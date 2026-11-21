@@ -1,3 +1,4 @@
+import { t } from '@/shared/i18n';
 import type { ReactNode } from 'react';
 import { Button } from './Button';
 import { Modal } from './Modal';
@@ -18,7 +19,7 @@ export function ConfirmDialog({ title, children, confirmLabel, loading, onConfir
             <div className={styles.body}>{children}</div>
             <div className={styles.actions}>
                 <Button variant="ghost" onClick={onCancel} disabled={loading ?? false}>
-                    Cancelar
+                    {t('app.cancel')}
                 </Button>
                 <Button variant="danger" onClick={onConfirm} loading={loading ?? false}>
                     {confirmLabel}

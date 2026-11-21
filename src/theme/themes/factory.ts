@@ -45,7 +45,7 @@ export function buildTheme(s: ThemeSpec): Theme {
             text: {
                 primary: s.text,
                 secondary: mix(s.text, s.surface, dark ? 78 : 76),
-                muted: mix(s.text, s.surface, dark ? 58 : 60),
+                muted: mix(s.text, s.surface, dark ? 64 : 72),
                 onBrand: s.onBrand,
                 onAccent: s.onAccent,
             },

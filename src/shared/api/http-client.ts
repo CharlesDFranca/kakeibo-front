@@ -1,12 +1,26 @@
 import { ApiError, NetworkError, type ApiErrorBody } from "./api-error";
 
-const BASE_URL = (
-  import.meta.env.VITE_API_URL ?? "https://s5ck2ngk-3000.brs.devtunnels.ms/"
-).replace(/\/+$/, "");
+// Por padrão a API é chamada em "/api" (mesmo domínio do front). Em produção a Vercel
+// repassa "/api/*" para o Render (vercel.json) e em desenvolvimento o Vite faz o mesmo
+// (vite.config.ts). Assim o cookie de sessão é do próprio site e não é bloqueado como
+// cookie de terceiros pelo Safari/Chrome. VITE_API_URL só serve para apontar direto
+// para outra URL (nesse caso o cookie volta a ser cross-site).
+const BASE_URL = (import.meta.env.VITE_API_URL || "/api").replace(/\/+$/, "");
 
 type Envelope<T> =
   | { success: true; data: T }
   | { success: false; errors: ApiErrorBody; message?: string };
+
+/**
+ * Modo demonstração (tutorial): enquanto houver um resolvedor, as chamadas de dados não vão
+ * à rede e respondem na hora com exemplos fictícios. Sessão e usuário (`/auth`, `/users`)
+ * continuam reais.
+ */
+type DemoResolver = (path: string, method: string) => unknown;
+let demoResolver: DemoResolver | null = null;
+export function setDemoResolver(resolver: DemoResolver | null): void {
+  demoResolver = resolver;
+}
 
 type RequestOptions = { method?: string; body?: unknown };
 
@@ -18,6 +32,11 @@ export async function request<T>(
   path: string,
   { method = "GET", body }: RequestOptions = {},
 ): Promise<T> {
+  if (demoResolver && !/^\/?(auth|users)(\/|$)/.test(path)) {
+    await Promise.resolve();
+    return demoResolver(path, method) as T;
+  }
+
   let response: Response;
   try {
     const url = `${BASE_URL}/${path.replace(/^\/+/, "")}`;

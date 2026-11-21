@@ -1,3 +1,4 @@
+import { categoryLabel, t } from '@/shared/i18n';
 import { formatCurrency } from '@/shared/format/format';
 import { DonutChart, seriesColor } from '@/shared/ui/charts/DonutChart';
 import type { FinanceDashboard } from '../api/dashboard.api';
@@ -17,14 +18,14 @@ function groupSlices(items: NonNullable<Props['items']>) {
     const sorted = [...items].sort((a, b) => Number(b.amount) - Number(a.amount));
     const top = sorted.slice(0, MAX_SLICES - 1);
     const rest = sorted.slice(MAX_SLICES - 1);
-    const slices = top.map((i) => ({ label: i.categoryName, value: Number(i.amount), percentage: i.percentage }));
+    const slices = top.map((i) => ({ label: categoryLabel(i.categoryName), value: Number(i.amount), percentage: i.percentage }));
 
     if (rest.length === 1) {
         const r = rest[0]!;
-        slices.push({ label: r.categoryName, value: Number(r.amount), percentage: r.percentage });
+        slices.push({ label: categoryLabel(r.categoryName), value: Number(r.amount), percentage: r.percentage });
     } else if (rest.length > 1) {
         slices.push({
-            label: 'Outras',
+            label: t('dashboard.byCategory.others'),
             value: rest.reduce((s, i) => s + Number(i.amount), 0),
             percentage: rest.reduce((s, i) => s + i.percentage, 0),
         });
@@ -34,15 +35,15 @@ function groupSlices(items: NonNullable<Props['items']>) {
 
 export function ExpensesByCategory({ items, totalExpenses }: Props) {
     return (
-        <Card title="Despesas por categoria">
+        <Card title={t('dashboard.byCategory.title')} tour="categories">
             {items === null ? (
                 <LockedFeature
-                    feature="Análise por categoria"
+                    feature={t('dashboard.byCategory.locked')}
                     plan="Plus"
-                    description="Veja para onde seu dinheiro está indo, categoria por categoria."
+                    description={t('dashboard.byCategory.lockedDesc')}
                 />
             ) : items.length === 0 ? (
-                <p className={styles.empty}>Sem despesas neste período.</p>
+                <p className={styles.empty}>{t('dashboard.byCategory.empty')}</p>
             ) : (
                 <ExpensesChart items={items} totalExpenses={totalExpenses} />
             )}
@@ -57,7 +58,7 @@ function ExpensesChart({ items, totalExpenses }: { items: NonNullable<Props['ite
         <div className={styles.body}>
             <DonutChart
                 slices={slices}
-                centerLabel="Total"
+                centerLabel={t('dashboard.byCategory.total')}
                 centerValue={formatCurrency(totalExpenses)}
             />
             <ul className={styles.legend}>

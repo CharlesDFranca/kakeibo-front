@@ -13,12 +13,24 @@
 .brand {
     background: var(--gradient-brand);
     color: var(--color-text-on-brand);
+    /* dentro do cartão de destaque os tokens de superfície não valem (em tema claro seriam claros sobre claro): redefinidos a partir da cor do texto */
+    --color-text-primary: var(--color-text-on-brand);
+    --color-text-secondary: color-mix(in srgb, var(--color-text-on-brand) 86%, transparent);
+    --color-text-muted: color-mix(in srgb, var(--color-text-on-brand) 76%, transparent);
+    --color-bg-input: color-mix(in srgb, var(--color-text-on-brand) 16%, transparent);
+    --color-accent-soft: color-mix(in srgb, var(--color-text-on-brand) 22%, transparent);
+    --color-accent-text: var(--color-text-on-brand);
+    --color-border-subtle: color-mix(in srgb, var(--color-text-on-brand) 24%, transparent);
 }
 
 .accent {
     background: var(--color-accent-primary);
     color: var(--color-text-on-accent);
     border-color: transparent;
+    --color-text-primary: var(--color-text-on-accent);
+    --color-text-secondary: color-mix(in srgb, var(--color-text-on-accent) 86%, transparent);
+    --color-text-muted: color-mix(in srgb, var(--color-text-on-accent) 78%, transparent);
+    --color-bg-input: color-mix(in srgb, var(--color-text-on-accent) 14%, transparent);
     --color-accent-text: var(--color-text-on-accent);
 }
 

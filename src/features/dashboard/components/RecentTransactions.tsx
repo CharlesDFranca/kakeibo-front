@@ -1,3 +1,4 @@
+import { categoryLabel, descriptionLabel, t } from '@/shared/i18n';
 import { formatCurrency, formatDayMonth } from '@/shared/format/format';
 import { ArrowDownIcon, ArrowUpIcon, SwapIcon } from '@/shared/ui/icons';
 import type { FinanceDashboard, TransactionType } from '../api/dashboard.api';
@@ -17,14 +18,14 @@ const KIND: Record<TransactionType, 'income' | 'expense' | 'neutral'> = {
 const ICON = { income: <ArrowUpIcon size={16} />, expense: <ArrowDownIcon size={16} />, neutral: <SwapIcon size={16} /> };
 
 function label(tx: Tx): string {
-    return tx.description.trim() || tx.category.name;
+    return descriptionLabel(tx.description.trim()) || categoryLabel(tx.category.name);
 }
 
 export function RecentTransactions({ items }: { items: Tx[] }) {
     return (
-        <Card title="Últimas transações">
+        <Card title={t('dashboard.recent.title')} tour="recent">
             {items.length === 0 ? (
-                <p className={styles.empty}>Nenhuma transação registrada ainda.</p>
+                <p className={styles.empty}>{t('dashboard.recent.empty')}</p>
             ) : (
                 <ul className={styles.list}>
                     {items.map((tx) => {
@@ -36,7 +37,7 @@ export function RecentTransactions({ items }: { items: Tx[] }) {
                                 <div className={styles.info}>
                                     <strong>{label(tx)}</strong>
                                     <span>
-                                        {tx.category.name} · {tx.wallet.name} · {formatDayMonth(tx.date)}
+                                        {categoryLabel(tx.category.name)} · {tx.wallet.name} · {formatDayMonth(tx.date)}
                                     </span>
                                 </div>
                                 <span className={`${styles.amount} ${styles[`amount_${kind}`]}`}>

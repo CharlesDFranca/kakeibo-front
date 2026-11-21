@@ -25,6 +25,7 @@ function readStoredId(): string {
     try {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored && themes[stored]) return stored;
+        if (stored === 'prisma') return 'vinho'; // o Prisma foi substituído pelo Vinho
     } catch {
         /* storage indisponível: usa o padrão */
     }

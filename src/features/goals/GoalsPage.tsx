@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { formatCurrency, formatLocalDate, daysUntil } from '@/shared/format/format';
+import { t, tn } from '@/shared/i18n';
 import { PageHeader } from '@/shared/layout/PageHeader';
 import { Alert, Button, EmptyState, LockedFeature, PlusIcon, Skeleton, TargetIcon, useToast } from '@/shared/ui';
 import { Card } from '@/features/dashboard/components/Card';
@@ -10,7 +11,7 @@ import { GoalFormModal } from './components/GoalFormModal';
 import { GoalStatusBadge } from './components/GoalStatusBadge';
 import { ProgressBar } from './components/ProgressBar';
 import { useGoals } from './hooks/useGoals';
-import { STATUS_FILTERS, progressOf } from './status';
+import { statusFilters, progressOf } from './status';
 import type { GoalStatus } from './api/goals.api';
 import styles from './GoalsPage.module.css';
 
@@ -21,12 +22,12 @@ export function GoalsPage() {
     if (!allowed) {
         return (
             <>
-                <PageHeader eyebrow="Planejamento" title="Metas" />
+                <PageHeader eyebrow={t('goals.eyebrow')} title={t('goals.title')} />
                 <Card>
                     <LockedFeature
-                        feature="Metas financeiras"
+                        feature={t('goals.locked.feature')}
                         plan="Pro"
-                        description="Crie metas com prazo, faça aportes a partir das suas carteiras e acompanhe o progresso."
+                        description={t('goals.locked.description')}
                     />
                 </Card>
             </>
@@ -38,9 +39,9 @@ export function GoalsPage() {
 
 function deadlineLabel(goal: Goal): string | null {
     if (!goal.deadline) return null;
-    if (goal.status !== 'IN PROGRESS') return `Prazo: ${formatLocalDate(goal.deadline)}`;
+    if (goal.status !== 'IN PROGRESS') return t('goals.deadline.until', { date: formatLocalDate(goal.deadline) });
     const days = daysUntil(goal.deadline);
-    return days === 0 ? 'Vence hoje' : `${days} ${days === 1 ? 'dia restante' : 'dias restantes'}`;
+    return days === 0 ? t('goals.deadline.today') : tn('goals.deadline.left', days);
 }
 
 function GoalsContent() {
@@ -50,8 +51,8 @@ function GoalsContent() {
     const [creating, setCreating] = useState(false);
 
     const newButton = (
-        <Button onClick={() => setCreating(true)}>
-            <PlusIcon size={18} /> Nova meta
+        <Button onClick={() => setCreating(true)} data-tour="new-goal">
+            <PlusIcon size={18} /> {t('goals.new')}
         </Button>
     );
 
@@ -60,7 +61,7 @@ function GoalsContent() {
 
     return (
         <>
-            <PageHeader eyebrow="Planejamento" title="Metas" actions={newButton} />
+            <PageHeader eyebrow={t('goals.eyebrow')} title={t('goals.title')} actions={newButton} />
 
             {state.status === 'loading' && (
                 <div className={styles.grid}>
@@ -74,23 +75,23 @@ function GoalsContent() {
                 <div className={styles.error}>
                     <Alert tone="danger">{state.message}</Alert>
                     <Button variant="ghost" onClick={reload}>
-                        Tentar novamente
+                        {t('goals.retry')}
                     </Button>
                 </div>
             )}
 
             {state.status === 'ready' && goals.length === 0 && (
-                <Card>
-                    <EmptyState icon={<TargetIcon size={26} />} title="Nenhuma meta ainda" action={newButton}>
-                        Defina um valor-alvo e um prazo, e faça aportes das suas carteiras até chegar lá.
+                <Card tour="goals-empty">
+                    <EmptyState icon={<TargetIcon size={26} />} title={t('goals.empty.title')} action={newButton}>
+                        {t('goals.empty.text')}
                     </EmptyState>
                 </Card>
             )}
 
             {state.status === 'ready' && goals.length > 0 && (
                 <>
-                    <div className={styles.tabs} role="group" aria-label="Filtrar por situação">
-                        {STATUS_FILTERS.map((f) => (
+                    <div className={styles.tabs} role="group" aria-label={t('goals.filters.aria')} data-tour="goal-filters">
+                        {statusFilters().map((f) => (
                             <button
                                 key={f.value}
                                 type="button"
@@ -105,8 +106,8 @@ function GoalsContent() {
 
                     {visible.length === 0 ? (
                         <Card>
-                            <EmptyState icon={<TargetIcon size={26} />} title="Nenhuma meta com esta situação">
-                                Troque o filtro para ver as demais.
+                            <EmptyState icon={<TargetIcon size={26} />} title={t('goals.emptyFilter.title')}>
+                                {t('goals.emptyFilter.text')}
                             </EmptyState>
                         </Card>
                     ) : (
@@ -116,20 +117,20 @@ function GoalsContent() {
                                 const deadline = deadlineLabel(goal);
                                 return (
                                     <li key={goal.id}>
-                                        <Link to={`/metas/${goal.id}`} className={styles.card}>
+                                        <Link to={`/metas/${goal.id}`} className={styles.card} data-tour="goal-card" data-status={goal.status}>
                                             <div className={styles.cardHead}>
                                                 <strong className={styles.name}>{goal.name}</strong>
                                                 <GoalStatusBadge status={goal.status} />
                                             </div>
                                             <span className={styles.amounts}>
-                                                {formatCurrency(goal.currentAmount)} de {formatCurrency(goal.targetAmount)}
+                                                {t('goals.card.amounts', { current: formatCurrency(goal.currentAmount), target: formatCurrency(goal.targetAmount) })}
                                             </span>
                                             <div className={styles.progress}>
                                                 <div className={styles.row}>
-                                                    <span>Progresso</span>
+                                                    <span>{t('goals.card.progress')}</span>
                                                     <span>{pct}%</span>
                                                 </div>
-                                                <ProgressBar percent={pct} label={`Progresso da meta ${goal.name}`} />
+                                                <ProgressBar percent={pct} label={t('goals.card.progressAria', { name: goal.name })} />
                                             </div>
                                             {deadline && <span className={styles.deadline}>{deadline}</span>}
                                         </Link>

@@ -1,4 +1,5 @@
 import { AreaChart } from '@/shared/ui/charts/AreaChart';
+import { t } from '@/shared/i18n';
 import { formatCurrency, formatDate } from '@/shared/format/format';
 import type { FinanceDashboard } from '../api/dashboard.api';
 import { Card } from './Card';
@@ -11,26 +12,26 @@ export function OverviewCard({ data }: { data: FinanceDashboard }) {
     }));
 
     return (
-        <Card title="Evolução do saldo" tone="brand">
+        <Card title={t('dashboard.evolution.title')} tone="brand" tour="evolution">
             {points.length > 0 ? (
                 <div className={styles.chart}>
                     <AreaChart data={points} format={formatCurrency} height={210} />
                 </div>
             ) : (
-                <p className={styles.empty}>Sem movimentações neste período.</p>
+                <p className={styles.empty}>{t('dashboard.evolution.empty')}</p>
             )}
 
-            <dl className={styles.stats}>
+            <dl className={styles.stats} data-tour="balance-stats">
                 <div>
-                    <dt>Receitas</dt>
+                    <dt>{t('dashboard.income')}</dt>
                     <dd>{formatCurrency(data.balance.income)}</dd>
                 </div>
                 <div className={styles.main}>
-                    <dt>Saldo atual</dt>
+                    <dt>{t('dashboard.currentBalance')}</dt>
                     <dd>{formatCurrency(data.balance.current)}</dd>
                 </div>
                 <div>
-                    <dt>Despesas</dt>
+                    <dt>{t('dashboard.expenses')}</dt>
                     <dd>{formatCurrency(data.balance.expenses)}</dd>
                 </div>
             </dl>

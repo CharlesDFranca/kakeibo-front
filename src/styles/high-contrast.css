@@ -1,0 +1,32 @@
+/*
+ * Alto contraste (eMAG): reforços que não dependem de cor. Só valem com o tema
+ * "Alto contraste" ativo. Links sublinhados, bordas visíveis e foco bem marcado.
+ */
+:root[data-theme='alto-contraste'] a {
+    color: var(--color-accent-text);
+    text-decoration: underline;
+}
+
+:root[data-theme='alto-contraste'] :is(button, input, select, textarea, a):focus-visible {
+    outline: 3px solid #fff333;
+    outline-offset: 2px;
+}
+
+:root[data-theme='alto-contraste'] :is(button, input, select, textarea) {
+    border-color: #ffffff;
+}
+
+/* os cartões, a barra lateral e as janelas ficam delimitados por uma borda branca */
+:root[data-theme='alto-contraste'] :is([class*='Card_card'], [class*='Sidebar_sidebar'], [role='dialog']) {
+    border: 2px solid #ffffff;
+}
+
+:root[data-theme='alto-contraste'] [class*='Sidebar_active'] {
+    outline: 2px solid #fff333;
+    background: #fff333;
+    color: #000000;
+}
+
+:root[data-theme='alto-contraste'] [class*='ProgressBar_bar'] {
+    outline: 1px solid #ffffff;
+}

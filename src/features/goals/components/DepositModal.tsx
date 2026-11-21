@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { apiErrorMessage } from '@/shared/api/error-messages';
 import { formatCurrency } from '@/shared/format/format';
+import { apiErrorMessage, t } from '@/shared/i18n';
 import { parseMoneyInput } from '@/shared/format/money-input';
 import { Alert, Button, Modal, SelectField, TextField } from '@/shared/ui';
 import type { Wallet } from '@/features/wallets/api/wallets.api';
@@ -33,10 +33,10 @@ export function DepositModal({ goalId, goalName, remaining, wallets, onClose, on
 
         const parsed = parseMoneyInput(amount);
         const found: typeof errors = {};
-        if (!walletId) found.walletId = 'Escolha de qual carteira sairá o dinheiro.';
-        if (parsed === null || Number(parsed) <= 0) found.amount = 'Informe um valor maior que zero, como 300,00.';
-        else if (Number(parsed) > remaining + 0.001) found.amount = `O aporte passa do que falta para a meta (${formatCurrency(remaining)}).`;
-        else if (wallet && Number(parsed) > Number(wallet.balance)) found.amount = `Saldo insuficiente na carteira (${formatCurrency(wallet.balance)}).`;
+        if (!walletId) found.walletId = t('goals.deposit.error.wallet');
+        if (parsed === null || Number(parsed) <= 0) found.amount = t('goals.deposit.error.amount');
+        else if (Number(parsed) > remaining + 0.001) found.amount = t('goals.deposit.error.exceeds', { amount: formatCurrency(remaining) });
+        else if (wallet && Number(parsed) > Number(wallet.balance)) found.amount = t('goals.deposit.error.insufficient', { amount: formatCurrency(wallet.balance) });
         setErrors(found);
         if (Object.keys(found).length > 0) return;
 
@@ -52,14 +52,14 @@ export function DepositModal({ goalId, goalName, remaining, wallets, onClose, on
 
     if (wallets.length === 0) {
         return (
-            <Modal title="Aportar na meta" onClose={onClose}>
-                <p className={styles.notice}>Você precisa de uma carteira com saldo para aportar.</p>
+            <Modal title={t('goals.deposit.titleNoWallet')} onClose={onClose}>
+                <p className={styles.notice} data-tour="modal-notice">{t('goals.deposit.needWallet')}</p>
                 <div className={styles.actions}>
                     <Button variant="ghost" onClick={onClose}>
-                        Fechar
+                        {t('goals.deposit.close')}
                     </Button>
                     <Link to="/carteiras" className={styles.linkButton}>
-                        Ir para carteiras
+                        {t('goals.deposit.goWallets')}
                     </Link>
                 </div>
             </Modal>
@@ -67,35 +67,35 @@ export function DepositModal({ goalId, goalName, remaining, wallets, onClose, on
     }
 
     return (
-        <Modal title={`Aportar em ${goalName}`} onClose={onClose}>
+        <Modal title={t('goals.deposit.title', { name: goalName })} onClose={onClose}>
             <form className={styles.form} onSubmit={handleSubmit} noValidate>
                 {formError && <Alert tone="danger">{formError}</Alert>}
 
                 <SelectField
-                    label="Carteira de origem"
-                    placeholder="Selecione"
+                    label={t('goals.deposit.wallet')}
+                    placeholder={t('goals.deposit.select')}
                     value={walletId}
                     onChange={(e) => setWalletId(e.target.value)}
                     options={wallets.map((w) => ({ value: w.id, label: `${w.name} · ${formatCurrency(w.balance)}` }))}
                     error={errors.walletId}
                 />
                 <TextField
-                    label="Valor do aporte"
+                    label={t('goals.deposit.amount')}
                     inputMode="decimal"
-                    placeholder="0,00"
+                    placeholder={t('goals.deposit.amountPlaceholder')}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     error={errors.amount}
-                    hint={`Faltam ${formatCurrency(remaining)} para a meta.`}
+                    hint={t('goals.deposit.hint', { amount: formatCurrency(remaining) })}
                 />
-                <p className={styles.note}>O valor sai da carteira e fica reservado na meta. Você pode estornar o aporte depois.</p>
+                <p className={styles.note}>{t('goals.deposit.note')}</p>
 
                 <div className={styles.actions}>
                     <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>
-                        Cancelar
+                        {t('goals.form.cancel')}
                     </Button>
                     <Button type="submit" loading={saving}>
-                        Aportar
+                        {t('goals.deposit.submit')}
                     </Button>
                 </div>
             </form>

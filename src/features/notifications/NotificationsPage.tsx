@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { apiErrorMessage } from '@/shared/api/error-messages';
 import { useAsyncData } from '@/shared/hooks/useAsyncData';
+import { apiErrorMessage, intlTag, notificationText, t, tn } from '@/shared/i18n';
 import { PageHeader } from '@/shared/layout/PageHeader';
 import { Alert, BellIcon, Button, CheckIcon, EmptyState, LockedFeature, Skeleton, TargetIcon, useToast } from '@/shared/ui';
 import { Card } from '@/features/dashboard/components/Card';
@@ -8,7 +8,8 @@ import { useHasFeature } from '@/features/auth/hooks';
 import { notificationsApi, type AppNotification } from './notifications.api';
 import styles from './NotificationsPage.module.css';
 
-const dateTime = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+const formatDateTime = (iso: string) =>
+    new Intl.DateTimeFormat(intlTag(), { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
 
 /** Notificações exigem o plano Pro; sem ele mostramos o bloqueio e não chamamos a API. */
 export function NotificationsPage() {
@@ -17,12 +18,12 @@ export function NotificationsPage() {
     if (!allowed) {
         return (
             <>
-                <PageHeader eyebrow="Conta" title="Notificações" />
+                <PageHeader eyebrow={t('notifications.eyebrow')} title={t('notifications.title')} />
                 <Card>
                     <LockedFeature
-                        feature="Notificações"
+                        feature={t('notifications.locked.feature')}
                         plan="Pro"
-                        description="Receba avisos, por exemplo quando uma meta for alcançada."
+                        description={t('notifications.locked.description')}
                     />
                 </Card>
             </>
@@ -59,7 +60,7 @@ function NotificationsContent() {
             // a API só marca uma por vez
             const results = await Promise.allSettled(unread.map((n) => notificationsApi.markAsRead(n.id)));
             const failed = results.filter((r) => r.status === 'rejected').length;
-            if (failed > 0) toast(`Não foi possível marcar ${failed} notificação(ões).`, 'danger');
+            if (failed > 0) toast(tn('notifications.markFailed', failed), 'danger');
             reload();
         } finally {
             setBusy(null);
@@ -67,19 +68,19 @@ function NotificationsContent() {
     }
 
     const markAllButton = unread.length > 0 && (
-        <Button variant="ghost" onClick={() => void markAll()} loading={busy === 'all'}>
-            <CheckIcon size={18} /> Marcar todas como lidas
+        <Button variant="ghost" onClick={() => void markAll()} loading={busy === 'all'} data-tour="notif-markall">
+            <CheckIcon size={18} /> {t('notifications.markAll')}
         </Button>
     );
 
     return (
         <>
-            <PageHeader eyebrow="Conta" title="Notificações" actions={markAllButton || undefined} />
+            <PageHeader eyebrow={t('notifications.eyebrow')} title={t('notifications.title')} actions={markAllButton || undefined} />
 
-            <div className={styles.tabs} role="group" aria-label="Filtrar notificações">
+            <div className={styles.tabs} role="group" aria-label={t('notifications.filters.aria')} data-tour="notif-filters">
                 {[
-                    { value: false, label: 'Todas' },
-                    { value: true, label: 'Não lidas' },
+                    { value: false, label: t('notifications.filter.all') },
+                    { value: true, label: t('notifications.filter.unread') },
                 ].map((f) => (
                     <button
                         key={f.label}
@@ -105,43 +106,46 @@ function NotificationsContent() {
                 <div className={styles.error}>
                     <Alert tone="danger">{state.message}</Alert>
                     <Button variant="ghost" onClick={reload}>
-                        Tentar novamente
+                        {t('notifications.retry')}
                     </Button>
                 </div>
             )}
 
             {state.status === 'ready' && items.length === 0 && (
-                <Card>
-                    <EmptyState icon={<BellIcon size={26} />} title={onlyUnread ? 'Nenhuma notificação não lida' : 'Nenhuma notificação ainda'}>
-                        {onlyUnread ? 'Você está em dia.' : 'Quando uma meta for alcançada, o aviso aparece aqui.'}
+                <Card tour="notif-empty">
+                    <EmptyState icon={<BellIcon size={26} />} title={onlyUnread ? t('notifications.empty.unread.title') : t('notifications.empty.title')}>
+                        {onlyUnread ? t('notifications.empty.unread.text') : t('notifications.empty.text')}
                     </EmptyState>
                 </Card>
             )}
 
             {state.status === 'ready' && items.length > 0 && (
-                <ul className={styles.list} aria-busy={state.refreshing}>
-                    {items.map((n) => (
+                <ul className={styles.list} aria-busy={state.refreshing} data-tour="notif-list">
+                    {items.map((n) => {
+                        const text = notificationText(n);
+                        return (
                         <li key={n.id} className={`${styles.item} ${n.read ? styles.read : ''}`}>
                             <span className={styles.icon} aria-hidden="true">
                                 <TargetIcon size={20} />
                             </span>
                             <div className={styles.body}>
                                 <strong className={styles.title}>
-                                    {!n.read && <span className={styles.dot} aria-label="Não lida" />}
-                                    {n.title}
+                                    {!n.read && <span className={styles.dot} aria-label={t('notifications.unread.aria')} />}
+                                    {text.title}
                                 </strong>
-                                <p className={styles.message}>{n.message}</p>
+                                <p className={styles.message}>{text.message}</p>
                                 <time className={styles.time} dateTime={n.createdAt}>
-                                    {dateTime.format(new Date(n.createdAt))}
+                                    {formatDateTime(n.createdAt)}
                                 </time>
                             </div>
                             {!n.read && (
-                                <Button variant="ghost" onClick={() => void markOne(n)} loading={busy === n.id}>
-                                    Marcar como lida
+                                <Button variant="ghost" data-tour="notif-mark" onClick={() => void markOne(n)} loading={busy === n.id}>
+                                    {t('notifications.markOne')}
                                 </Button>
                             )}
                         </li>
-                    ))}
+                        );
+                    })}
                 </ul>
             )}
         </>

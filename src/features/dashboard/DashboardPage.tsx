@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ArrowDownIcon, ArrowUpIcon, Alert, Button } from '@/shared/ui';
+import { t } from '@/shared/i18n';
 import { formatCurrency } from '@/shared/format/format';
 import { DashboardSkeleton } from './components/DashboardSkeleton';
 import { ExpensesByCategory } from './components/ExpensesByCategory';
@@ -9,14 +10,14 @@ import { RecentTransactions } from './components/RecentTransactions';
 import { SummaryCard } from './components/SummaryCard';
 import { Topbar } from './components/Topbar';
 import { useFinanceDashboard } from './hooks/useDashboard';
-import { DEFAULT_PERIOD, PERIODS, type PeriodId } from './periods';
+import { DEFAULT_PERIOD, periods, type PeriodId } from './periods';
 import styles from './DashboardPage.module.css';
 
 export function DashboardPage() {
     const [period, setPeriod] = useState<PeriodId>(DEFAULT_PERIOD);
     const [reloadKey, setReloadKey] = useState(0);
     const state = useFinanceDashboard(period, reloadKey);
-    const periodLabel = PERIODS.find((p) => p.id === period)?.label.toLowerCase() ?? '';
+    const periodLabel = periods().find((p) => p.id === period)?.label.toLowerCase() ?? '';
 
     return (
         <>
@@ -28,7 +29,7 @@ export function DashboardPage() {
                 <div className={styles.error}>
                     <Alert tone="danger">{state.message}</Alert>
                     <Button variant="ghost" onClick={() => setReloadKey((k) => k + 1)}>
-                        Tentar novamente
+                        {t('dashboard.retry')}
                     </Button>
                 </div>
             )}
@@ -38,19 +39,19 @@ export function DashboardPage() {
                     <div className={styles.main}>
                         <OverviewCard data={state.data} />
 
-                        <div className={styles.summaries}>
+                        <div className={styles.summaries} data-tour="summaries">
                             <SummaryCard
                                 tone="brand"
-                                label="Receitas"
+                                label={t('dashboard.income')}
                                 value={formatCurrency(state.data.balance.income)}
-                                hint={`Entradas ${periodLabel}`}
+                                hint={t('dashboard.incomeHint', { period: periodLabel })}
                                 icon={<ArrowUpIcon />}
                             />
                             <SummaryCard
                                 tone="accent"
-                                label="Despesas"
+                                label={t('dashboard.expenses')}
                                 value={formatCurrency(state.data.balance.expenses)}
-                                hint={`Saídas ${periodLabel}`}
+                                hint={t('dashboard.expensesHint', { period: periodLabel })}
                                 icon={<ArrowDownIcon />}
                             />
                         </div>
@@ -58,7 +59,7 @@ export function DashboardPage() {
                         <GoalsSection reloadKey={reloadKey} />
                     </div>
 
-                    <aside className={styles.side}>
+                    <aside className={styles.side} data-tour="dash-side">
                         <RecentTransactions items={state.data.recentTransactions} />
                         <ExpensesByCategory
                             items={state.data.expensesByCategory}

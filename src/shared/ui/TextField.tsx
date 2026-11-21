@@ -1,3 +1,4 @@
+import { t } from '@/shared/i18n';
 import { useId, useState, type InputHTMLAttributes, type ReactNode } from 'react';
 import styles from './TextField.module.css';
 
@@ -35,9 +36,9 @@ export function TextField({ label, error, hint, icon, type, ...rest }: Props) {
                         type="button"
                         className={styles.toggle}
                         onClick={() => setVisible((v) => !v)}
-                        aria-label={visible ? 'Ocultar senha' : 'Mostrar senha'}
+                        aria-label={visible ? t('app.password.hideAria') : t('app.password.showAria')}
                     >
-                        {visible ? 'Ocultar' : 'Mostrar'}
+                        {visible ? t('app.password.hide') : t('app.password.show')}
                     </button>
                 )}
             </div>
