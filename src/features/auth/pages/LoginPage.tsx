@@ -1,3 +1,4 @@
+import { t } from '@/shared/i18n';
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Alert, Button, TextField } from '@/shared/ui';
@@ -44,41 +45,41 @@ export function LoginPage() {
 
     return (
         <AuthLayout
-            title="Bem-vindo de volta"
-            subtitle="Entre para acompanhar suas finanças."
+            title={t('auth.login.title')}
+            subtitle={t('auth.login.subtitle')}
             footer={
                 <>
-                    Ainda não tem conta? <Link to="/cadastro">Criar conta</Link>
+                    {t('auth.login.noAccount')} <Link to="/cadastro">{t('auth.login.createAccount')}</Link>
                 </>
             }
         >
             <form className={styles.form} onSubmit={handleSubmit} noValidate>
                 {justRegistered && (
-                    <Alert tone="success">Conta criada! Entre com seus dados.</Alert>
+                    <Alert tone="success">{t('auth.login.registered')}</Alert>
                 )}
                 {formError && <Alert tone="danger">{formError}</Alert>}
 
                 <TextField
-                    label="E-mail"
+                    label={t('auth.login.email')}
                     type="email"
                     autoComplete="email"
-                    placeholder="voce@exemplo.com"
+                    placeholder={t('auth.login.emailPlaceholder')}
                     value={values.email}
                     onChange={set('email')}
                     error={errors.email}
                 />
                 <TextField
-                    label="Senha"
+                    label={t('auth.login.password')}
                     type="password"
                     autoComplete="current-password"
-                    placeholder="Sua senha"
+                    placeholder={t('auth.login.passwordPlaceholder')}
                     value={values.password}
                     onChange={set('password')}
                     error={errors.password}
                 />
 
                 <Button type="submit" fullWidth loading={submitting}>
-                    Entrar
+                    {t('auth.login.submit')}
                 </Button>
             </form>
         </AuthLayout>

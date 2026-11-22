@@ -1,0 +1,207 @@
+.root {
+    --tour-dim: rgba(7, 9, 20, 0.74);
+}
+
+/* Cobre a tela inteira e engole os cliques: o app atrás fica só para ser visto. */
+.blocker {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    touch-action: none;
+    transition: background-color 0.2s ease;
+}
+
+.dim {
+    background: var(--tour-dim);
+}
+
+/* Janela de luz sobre o elemento: a sombra gigante escurece todo o resto. */
+.spot {
+    position: fixed;
+    z-index: 101;
+    pointer-events: none;
+    box-shadow:
+        0 0 0 2px var(--color-accent-primary),
+        0 0 0 200vmax var(--tour-dim);
+    transition:
+        left 0.24s ease,
+        top 0.24s ease,
+        width 0.24s ease,
+        height 0.24s ease,
+        border-radius 0.24s ease;
+}
+
+.pop {
+    position: fixed;
+    z-index: 102;
+    width: 22rem;
+    max-width: calc(100vw - 1.5rem);
+    max-height: calc(100dvh - 1.5rem);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem 1.125rem;
+    background: var(--color-bg-surface);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.45);
+    transition:
+        left 0.24s ease,
+        top 0.24s ease;
+}
+
+.pop:focus {
+    outline: none;
+}
+
+/* Resumo da tela (sem elemento destacado): caixa central e um pouco maior. */
+.center {
+    width: min(27rem, calc(100vw - 1.5rem));
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--radius-md);
+    background: var(--color-accent-primary);
+    color: var(--color-text-on-accent);
+}
+
+.where {
+    display: flex;
+    flex: 1;
+    align-items: baseline;
+    gap: 0.5rem;
+    min-width: 0;
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+}
+
+.where strong {
+    color: var(--color-text-primary);
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.close {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+}
+
+.close:hover {
+    background: var(--color-brand-soft);
+}
+
+.close:focus-visible,
+.skip:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+}
+
+.title {
+    font-size: 1.0625rem;
+    letter-spacing: -0.005em;
+}
+
+.text {
+    margin-top: 0.25rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+}
+
+.locked {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.locked a {
+    color: var(--color-accent-text);
+    font-weight: 700;
+}
+
+.progress {
+    height: 0.25rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, currentColor 16%, transparent);
+    overflow: hidden;
+}
+
+.progress i {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--color-accent-primary);
+    transition: width 0.24s ease;
+}
+
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.nav {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.skip {
+    padding: 0.5rem 0.25rem;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.skip:hover:not(:disabled) {
+    color: var(--color-text-primary);
+}
+
+@media (max-width: 760px) {
+    .pop {
+        padding: 0.875rem 1rem;
+    }
+
+    .center {
+        width: min(27rem, calc(100vw - 1.5rem));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spot,
+    .pop,
+    .progress i,
+    .blocker {
+        transition: none;
+    }
+}

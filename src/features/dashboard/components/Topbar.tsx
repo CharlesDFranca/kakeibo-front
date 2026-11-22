@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/features/auth/context/AuthContext';
+import { t } from '@/shared/i18n';
 import { initials } from '@/shared/format/format';
-import { PERIODS, type PeriodId } from '../periods';
+import { periods, type PeriodId } from '../periods';
 import styles from './Topbar.module.css';
 
 type Props = { period: PeriodId; onPeriodChange: (p: PeriodId) => void };
@@ -13,15 +14,15 @@ export function Topbar({ period, onPeriodChange }: Props) {
     return (
         <header className={styles.topbar}>
             <div>
-                <span className={styles.eyebrow}>Olá, {displayName.split(' ')[0]}</span>
-                <h1 className={styles.title}>Painel</h1>
+                <span className={styles.eyebrow}>{t('dashboard.greeting', { name: displayName.split(' ')[0] ?? '' })}</span>
+                <h1 className={styles.title}>{t('dashboard.title')}</h1>
             </div>
 
-            <div className={styles.actions}>
-                <label className={styles.select}>
-                    <span className={styles.srOnly}>Período</span>
+            <div className={styles.actions} data-tour="topbar-actions">
+                <label className={styles.select} data-tour="period">
+                    <span className={styles.srOnly}>{t('dashboard.period')}</span>
                     <select value={period} onChange={(e) => onPeriodChange(e.target.value as PeriodId)}>
-                        {PERIODS.map((p) => (
+                        {periods().map((p) => (
                             <option key={p.id} value={p.id}>
                                 {p.label}
                             </option>
@@ -29,10 +30,10 @@ export function Topbar({ period, onPeriodChange }: Props) {
                     </select>
                 </label>
 
-                <Link to="/planos" className={styles.plan} title="Ver planos">
+                <Link to="/planos" className={styles.plan} title={t('dashboard.viewPlans')} data-tour="plan-badge">
                     {user?.plan}
                 </Link>
-                <Link to="/perfil" className={styles.avatar} title="Perfil" aria-label={`Perfil de ${displayName}`}>
+                <Link to="/perfil" data-tour="avatar" className={styles.avatar} title={t('dashboard.profile')} aria-label={t('dashboard.profileOf', { name: displayName })}>
                     {initials(displayName)}
                 </Link>
             </div>

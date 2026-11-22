@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { apiErrorMessage } from '@/shared/api/error-messages';
 import { formatCurrency } from '@/shared/format/format';
+import { apiErrorMessage, t } from '@/shared/i18n';
 import { parseMoneyInput } from '@/shared/format/money-input';
 import { Alert, Button, Modal, SelectField, TextField } from '@/shared/ui';
 import type { Wallet } from '@/features/wallets/api/wallets.api';
@@ -32,12 +32,12 @@ export function TransferFormModal({ wallets, onClose, onSaved }: Props) {
 
         const parsed = parseMoneyInput(amount);
         const found: Errors = {};
-        if (!source) found.source = 'Escolha a carteira de origem.';
-        if (!destination) found.destination = 'Escolha a carteira de destino.';
-        else if (destination === source) found.destination = 'Origem e destino devem ser diferentes.';
-        if (parsed === null || Number(parsed) <= 0) found.amount = 'Informe um valor maior que zero, como 250,00.';
+        if (!source) found.source = t('transfers.error.source');
+        if (!destination) found.destination = t('transfers.error.destination');
+        else if (destination === source) found.destination = t('transfers.error.sameWallet');
+        if (parsed === null || Number(parsed) <= 0) found.amount = t('transfers.error.amount');
         else if (sourceWallet && Number(parsed) > Number(sourceWallet.balance)) {
-            found.amount = `Saldo insuficiente (disponível: ${formatCurrency(sourceWallet.balance)}).`;
+            found.amount = t('transfers.error.insufficient', { amount: formatCurrency(sourceWallet.balance) });
         }
         setErrors(found);
         if (Object.keys(found).length > 0) return;
@@ -54,14 +54,14 @@ export function TransferFormModal({ wallets, onClose, onSaved }: Props) {
 
     if (wallets.length < 2) {
         return (
-            <Modal title="Nova transferência" onClose={onClose}>
-                <p className={styles.notice}>Para transferir você precisa de pelo menos duas carteiras.</p>
+            <Modal title={t('transfers.form.title')} onClose={onClose}>
+                <p className={styles.notice} data-tour="modal-notice">{t('transfers.form.needTwo')}</p>
                 <div className={styles.actions}>
                     <Button variant="ghost" onClick={onClose}>
-                        Fechar
+                        {t('transfers.close')}
                     </Button>
                     <Link to="/carteiras" className={styles.linkButton}>
-                        Ir para carteiras
+                        {t('transfers.form.goWallets')}
                     </Link>
                 </div>
             </Modal>
@@ -71,13 +71,13 @@ export function TransferFormModal({ wallets, onClose, onSaved }: Props) {
     const options = wallets.map((w) => ({ value: w.id, label: `${w.name} · ${formatCurrency(w.balance)}` }));
 
     return (
-        <Modal title="Nova transferência" onClose={onClose}>
+        <Modal title={t('transfers.form.title')} onClose={onClose}>
             <form className={styles.form} onSubmit={handleSubmit} noValidate>
                 {formError && <Alert tone="danger">{formError}</Alert>}
 
                 <SelectField
-                    label="De (origem)"
-                    placeholder="Selecione"
+                    label={t('transfers.form.source')}
+                    placeholder={t('transfers.form.select')}
                     value={source}
                     onChange={(e) => setSource(e.target.value)}
                     options={options}
@@ -85,12 +85,12 @@ export function TransferFormModal({ wallets, onClose, onSaved }: Props) {
                 />
 
                 <button type="button" className={styles.swap} onClick={swap} disabled={!source && !destination}>
-                    ⇅ Inverter
+                    {t('transfers.form.swap')}
                 </button>
 
                 <SelectField
-                    label="Para (destino)"
-                    placeholder="Selecione"
+                    label={t('transfers.form.destination')}
+                    placeholder={t('transfers.form.select')}
                     value={destination}
                     onChange={(e) => setDestination(e.target.value)}
                     options={options.filter((o) => o.value !== source)}
@@ -98,21 +98,21 @@ export function TransferFormModal({ wallets, onClose, onSaved }: Props) {
                 />
 
                 <TextField
-                    label="Valor"
+                    label={t('transfers.form.amount')}
                     inputMode="decimal"
-                    placeholder="0,00"
+                    placeholder={t('transfers.form.amountPlaceholder')}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     error={errors.amount}
-                    hint={sourceWallet ? `Disponível na origem: ${formatCurrency(sourceWallet.balance)}` : undefined}
+                    hint={sourceWallet ? t('transfers.form.available', { amount: formatCurrency(sourceWallet.balance) }) : undefined}
                 />
 
                 <div className={styles.actions}>
                     <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>
-                        Cancelar
+                        {t('transfers.form.cancel')}
                     </Button>
                     <Button type="submit" loading={saving}>
-                        Transferir
+                        {t('transfers.form.submit')}
                     </Button>
                 </div>
             </form>

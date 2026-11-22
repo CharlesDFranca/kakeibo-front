@@ -1,3 +1,4 @@
+import { t } from '@/shared/i18n';
 import styles from './DonutChart.module.css';
 
 export type DonutSlice = { label: string; value: number };
@@ -16,7 +17,7 @@ export function DonutChart({ slices, centerLabel, centerValue }: { slices: Donut
 
     return (
         <div className={styles.wrap}>
-            <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className={styles.svg} role="img" aria-label="Despesas por categoria">
+            <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className={styles.svg} role="img" aria-label={t('dashboard.chart.expensesByCategory')}>
                 <circle cx={SIZE / 2} cy={SIZE / 2} r={R} className={styles.track} strokeWidth={STROKE} />
                 {total > 0 &&
                     slices.map((slice, i) => {

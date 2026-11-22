@@ -1,5 +1,5 @@
 import type { GoalStatus } from '../api/goals.api';
-import { STATUS_LABEL } from '../status';
+import { statusLabel } from '../status';
 import styles from './GoalStatusBadge.module.css';
 
 const TONE: Record<GoalStatus, string> = {
@@ -10,5 +10,5 @@ const TONE: Record<GoalStatus, string> = {
 };
 
 export function GoalStatusBadge({ status }: { status: GoalStatus }) {
-    return <span className={`${styles.badge} ${TONE[status]}`}>{STATUS_LABEL[status]}</span>;
+    return <span className={`${styles.badge} ${TONE[status]}`}>{statusLabel(status)}</span>;
 }

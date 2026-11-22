@@ -1,12 +1,15 @@
 /**
- * Converte o texto digitado ("1.234,56", "10,5", "10.50") para o formato da API
+ * Converte o texto digitado ("1.234,56", "1,234.56", "10,5", "10.50") para o formato da API
  * ("1234.56"). Devolve null se não for um valor monetário válido.
  */
 export function parseMoneyInput(raw: string): string | null {
     let text = raw.replace(/[R$\s]/g, '');
     if (!text) return null;
 
-    if (text.includes(',')) {
+    if (text.includes(',') && text.includes('.') && text.lastIndexOf('.') > text.lastIndexOf(',')) {
+        // formato inglês: "1,234.56" (vírgula separa milhares, ponto separa decimais)
+        text = text.replace(/,/g, '');
+    } else if (text.includes(',')) {
         // vírgula é o separador decimal; pontos são milhares
         text = text.replace(/\./g, '').replace(',', '.');
     } else if ((text.match(/\./g) ?? []).length > 1) {

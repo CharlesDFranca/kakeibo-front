@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
-import { apiErrorMessage } from '@/shared/api/error-messages';
 import { parseMoneyInput } from '@/shared/format/money-input';
+import { apiErrorMessage, t } from '@/shared/i18n';
 import { Alert, Button, Modal, TextField } from '@/shared/ui';
 import { goalsApi } from '../api/goals.api';
 import { deadlineToIso, tomorrowDateOnly } from '../status';
@@ -28,12 +28,12 @@ export function GoalFormModal({ goal, onClose, onSaved }: Props) {
         setFormError(null);
 
         const found: typeof errors = {};
-        if (!name.trim()) found.name = 'Informe um nome.';
+        if (!name.trim()) found.name = t('goals.form.error.name');
         const amount = parseMoneyInput(target);
         if (!editing) {
-            if (amount === null || Number(amount) <= 0) found.target = 'Informe um valor-alvo maior que zero, como 5.000,00.';
-            if (!deadline) found.deadline = 'Escolha o prazo.';
-            else if (deadline < minDay) found.deadline = 'O prazo precisa ser a partir de amanhã.';
+            if (amount === null || Number(amount) <= 0) found.target = t('goals.form.error.target');
+            if (!deadline) found.deadline = t('goals.form.error.deadline');
+            else if (deadline < minDay) found.deadline = t('goals.form.error.deadlineMin');
         }
         setErrors(found);
         if (Object.keys(found).length > 0) return;
@@ -42,10 +42,10 @@ export function GoalFormModal({ goal, onClose, onSaved }: Props) {
         try {
             if (editing) {
                 await goalsApi.rename(goal.id, name.trim());
-                onSaved('Meta renomeada.');
+                onSaved(t('goals.toast.renamed'));
             } else {
                 await goalsApi.create({ name: name.trim(), targetAmount: amount!, deadline: deadlineToIso(deadline) });
-                onSaved('Meta criada.');
+                onSaved(t('goals.toast.created'));
             }
         } catch (error) {
             setFormError(apiErrorMessage(error));
@@ -54,13 +54,13 @@ export function GoalFormModal({ goal, onClose, onSaved }: Props) {
     }
 
     return (
-        <Modal title={editing ? 'Renomear meta' : 'Nova meta'} onClose={onClose}>
+        <Modal title={editing ? t('goals.form.renameTitle') : t('goals.form.newTitle')} onClose={onClose}>
             <form className={styles.form} onSubmit={handleSubmit} noValidate>
                 {formError && <Alert tone="danger">{formError}</Alert>}
 
                 <TextField
-                    label="Nome"
-                    placeholder="Ex.: Viagem, Notebook, Reserva"
+                    label={t('goals.form.name')}
+                    placeholder={t('goals.form.namePlaceholder')}
                     maxLength={100}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -70,31 +70,31 @@ export function GoalFormModal({ goal, onClose, onSaved }: Props) {
                 {!editing && (
                     <>
                         <TextField
-                            label="Valor-alvo"
+                            label={t('goals.form.target')}
                             inputMode="decimal"
-                            placeholder="0,00"
+                            placeholder={t('goals.form.amountPlaceholder')}
                             value={target}
                             onChange={(e) => setTarget(e.target.value)}
                             error={errors.target}
                         />
                         <TextField
-                            label="Prazo"
+                            label={t('goals.form.deadline')}
                             type="date"
                             min={minDay}
                             value={deadline}
                             onChange={(e) => setDeadline(e.target.value)}
                             error={errors.deadline}
-                            hint="Se o prazo passar sem atingir o valor, a meta expira (você pode reativá-la)."
+                            hint={t('goals.form.deadlineHint')}
                         />
                     </>
                 )}
 
                 <div className={styles.actions}>
                     <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>
-                        Cancelar
+                        {t('goals.form.cancel')}
                     </Button>
                     <Button type="submit" loading={saving}>
-                        {editing ? 'Salvar' : 'Criar meta'}
+                        {editing ? t('goals.form.save') : t('goals.form.create')}
                     </Button>
                 </div>
             </form>

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { apiErrorMessage } from '@/shared/api/error-messages';
+import { apiErrorMessage, t } from '@/shared/i18n';
 import { PageHeader } from '@/shared/layout/PageHeader';
 import { Button, CheckIcon, ConfirmDialog, MinusIcon, useToast } from '@/shared/ui';
 import { useAuth } from '@/features/auth/context/AuthContext';
 import type { Plan } from '@/features/auth/api/auth.api';
-import { BASE_FEATURES, FEATURE_KEYS, FEATURE_LABEL, PLAN_INFO, PLAN_ORDER, planDiff } from './plans';
+import { baseFeatures, FEATURE_KEYS, FEATURE_LABEL, PLAN_INFO, PLAN_ORDER, planDiff } from './plans';
 import styles from './PlansPage.module.css';
 
 export function PlansPage() {
@@ -21,7 +21,7 @@ export function PlansPage() {
         setSaving(true);
         try {
             await changePlan(plan);
-            toast(`Plano alterado para ${PLAN_INFO[plan].label}.`);
+            toast(t('plans.changed', { plan: PLAN_INFO[plan].label }));
         } catch (error) {
             toast(apiErrorMessage(error), 'danger');
         } finally {
@@ -35,27 +35,29 @@ export function PlansPage() {
 
     return (
         <>
-            <PageHeader eyebrow="Sua conta" title="Planos" />
+            <PageHeader eyebrow={t('plans.eyebrow')} title={t('plans.title')} />
 
             <p className={styles.intro}>
-                Você está no plano <strong>{PLAN_INFO[current].label}</strong>. Por enquanto a troca de plano é direta, sem cobrança. Ao mudar, seus dados são mantidos; só o acesso às telas de cada plano muda.{' '}
-                <Link to="/perfil">Ver perfil</Link>
+                {t('plans.intro', { plan: '\u0000' })
+                    .split('\u0000')
+                    .flatMap((part, i) => (i === 0 ? [part] : [<strong key="plan">{PLAN_INFO[current].label}</strong>, part]))}{' '}
+                <Link to="/perfil">{t('plans.viewProfile')}</Link>
             </p>
 
-            <div className={styles.grid}>
+            <div className={styles.grid} data-tour="plan-cards">
                 {PLAN_ORDER.map((plan) => {
                     const info = PLAN_INFO[plan];
                     const isCurrent = plan === current;
                     return (
-                        <section key={plan} className={`${styles.card} ${isCurrent ? styles.current : ''}`} aria-label={`Plano ${info.label}`}>
+                        <section key={plan} className={`${styles.card} ${isCurrent ? styles.current : ''}`} data-tour={isCurrent ? 'plan-current' : undefined} aria-label={t('plans.planAria', { plan: info.label })}>
                             <header className={styles.head}>
                                 <h2 className={styles.name}>{info.label}</h2>
-                                {isCurrent && <span className={styles.badge}>Plano atual</span>}
+                                {isCurrent && <span className={styles.badge}>{t('plans.current')}</span>}
                             </header>
                             <p className={styles.tagline}>{info.tagline}</p>
 
                             <ul className={styles.features}>
-                                {BASE_FEATURES.map((label) => (
+                                {baseFeatures().map((label) => (
                                     <li key={label} className={styles.on}>
                                         <CheckIcon size={16} /> {label}
                                     </li>
@@ -67,7 +69,7 @@ export function PlansPage() {
                                             {included ? <CheckIcon size={16} /> : <MinusIcon size={16} />}
                                             <span>
                                                 {FEATURE_LABEL[key]}
-                                                {!included && <span className={styles.sr}> (não incluído)</span>}
+                                                {!included && <span className={styles.sr}>{t('plans.notIncluded')}</span>}
                                             </span>
                                         </li>
                                     );
@@ -75,12 +77,13 @@ export function PlansPage() {
                             </ul>
 
                             <Button
+                                data-tour={isCurrent ? undefined : 'plan-change'}
                                 variant={isCurrent ? 'ghost' : 'primary'}
                                 fullWidth
                                 disabled={isCurrent}
                                 onClick={() => setTarget(plan)}
                             >
-                                {isCurrent ? 'Plano atual' : PLAN_ORDER.indexOf(plan) > PLAN_ORDER.indexOf(current) ? `Mudar para ${info.label}` : `Voltar para ${info.label}`}
+                                {isCurrent ? t('plans.current') : PLAN_ORDER.indexOf(plan) > PLAN_ORDER.indexOf(current) ? t('plans.switchTo', { plan: info.label }) : t('plans.backTo', { plan: info.label })}
                             </Button>
                         </section>
                     );
@@ -89,20 +92,20 @@ export function PlansPage() {
 
             {target && diff && (
                 <ConfirmDialog
-                    title={`${upgrade ? 'Mudar' : 'Reduzir'} para ${PLAN_INFO[target].label}`}
-                    confirmLabel="Confirmar"
+                    title={t(upgrade ? 'plans.dialog.upgrade' : 'plans.dialog.downgrade', { plan: PLAN_INFO[target].label })}
+                    confirmLabel={t('plans.dialog.confirm')}
                     loading={saving}
                     onCancel={() => setTarget(null)}
                     onConfirm={() => void confirm(target)}
                 >
                     {diff.gained.length > 0 && (
                         <p>
-                            <strong>Você ganha:</strong> {diff.gained.map((f) => FEATURE_LABEL[f]).join(', ')}.
+                            <strong>{t('plans.dialog.gain')}</strong> {diff.gained.map((f) => FEATURE_LABEL[f]).join(', ')}.
                         </p>
                     )}
                     {diff.lost.length > 0 && (
                         <p>
-                            <strong>Você perde o acesso a:</strong> {diff.lost.map((f) => FEATURE_LABEL[f]).join(', ')}. Seus dados continuam guardados e voltam a aparecer se você retornar ao plano.
+                            <strong>{t('plans.dialog.lose')}</strong> {diff.lost.map((f) => FEATURE_LABEL[f]).join(', ')}. {t('plans.dialog.loseNote')}
                         </p>
                     )}
                 </ConfirmDialog>

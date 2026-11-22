@@ -1,3 +1,4 @@
+import { t } from '@/shared/i18n';
 import { LockIcon } from './icons';
 import styles from './LockedFeature.module.css';
 
@@ -12,7 +13,7 @@ export function LockedFeature({ feature, plan, description }: Props) {
             </span>
             <strong>{feature}</strong>
             <p>{description}</p>
-            <span className={styles.badge}>Disponível no plano {plan}</span>
+            <span className={styles.badge}>{t('app.locked.badge', { plan })}</span>
         </div>
     );
 }

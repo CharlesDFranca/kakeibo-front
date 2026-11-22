@@ -19,6 +19,10 @@ type AuthContextValue = {
     logout: () => Promise<void>;
     /** Troca o plano e recarrega o usuário (as features mudam junto). */
     changePlan: (plan: Plan) => Promise<void>;
+    /** Registra no backend que o tutorial de uma tela já foi visto. */
+    markTutorialSeen: (id: string) => Promise<void>;
+    /** Zera os tutoriais vistos (todos voltam a aparecer). */
+    resetTutorials: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -70,9 +74,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         [loadUser],
     );
 
+    const markTutorialSeen = useCallback(async (id: string) => {
+        // atualiza na hora para o tutorial não reabrir enquanto a chamada não volta
+        setUser((u) => (u && !u.seenTutorials.includes(id) ? { ...u, seenTutorials: [...u.seenTutorials, id] } : u));
+        try {
+            await authApi.markTutorialSeen(id);
+        } catch (error) {
+            console.error(error); // sem rede: na próxima visita a dica pode aparecer de novo
+        }
+    }, []);
+
+    const resetTutorials = useCallback(async () => {
+        setUser((u) => (u ? { ...u, seenTutorials: [] } : u));
+        try {
+            await authApi.resetTutorials();
+        } catch (error) {
+            console.error(error);
+        }
+    }, []);
+
     const value = useMemo(
-        () => ({ status, user, login, logout, changePlan }),
-        [status, user, login, logout, changePlan],
+        () => ({ status, user, login, logout, changePlan, markTutorialSeen, resetTutorials }),
+        [status, user, login, logout, changePlan, markTutorialSeen, resetTutorials],
     );
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

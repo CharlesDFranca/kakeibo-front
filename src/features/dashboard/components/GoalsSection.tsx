@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { t, tn } from '@/shared/i18n';
 import { daysUntil, formatCurrency } from '@/shared/format/format';
 import { Skeleton } from '@/shared/ui';
 import { useGoalsDashboard } from '../hooks/useDashboard';
@@ -20,12 +21,12 @@ export function GoalsSection({ reloadKey }: { reloadKey: number }) {
     const { allowed, state } = useGoalsDashboard(reloadKey);
 
     return (
-        <Card title="Metas em andamento" action={allowed ? <Link to="/metas">Ver todas</Link> : undefined}>
+        <Card tour="goals-dash" title={t('dashboard.goals.title')} action={allowed ? <Link to="/metas">{t('dashboard.goals.viewAll')}</Link> : undefined}>
             {!allowed ? (
                 <LockedFeature
-                    feature="Metas financeiras"
+                    feature={t('dashboard.goals.locked')}
                     plan="Pro"
-                    description="Crie metas, faça aportes e acompanhe o progresso até o valor-alvo."
+                    description={t('dashboard.goals.lockedDesc')}
                 />
             ) : state.status === 'loading' ? (
                 <div className={styles.grid}>
@@ -36,7 +37,7 @@ export function GoalsSection({ reloadKey }: { reloadKey: number }) {
             ) : state.status === 'error' ? (
                 <p className={styles.message}>{state.message}</p>
             ) : state.data.length === 0 ? (
-                <p className={styles.message}>Nenhuma meta em andamento. Crie uma para começar.</p>
+                <p className={styles.message}>{t('dashboard.goals.empty')}</p>
             ) : (
                 <ul className={styles.grid}>
                     {state.data.map((goal) => {
@@ -49,11 +50,11 @@ export function GoalsSection({ reloadKey }: { reloadKey: number }) {
                                     {goal.name}
                                 </Link>
                                 <span className={styles.amounts}>
-                                    {formatCurrency(goal.currentAmount)} de {formatCurrency(goal.targetAmount)}
+                                    {t('dashboard.goals.amounts', { current: formatCurrency(goal.currentAmount), target: formatCurrency(goal.targetAmount) })}
                                 </span>
                                 <div className={styles.progress}>
                                     <div className={styles.row}>
-                                        <span>Progresso</span>
+                                        <span>{t('dashboard.goals.progress')}</span>
                                         <span>{pct}%</span>
                                     </div>
                                     <div
@@ -62,14 +63,14 @@ export function GoalsSection({ reloadKey }: { reloadKey: number }) {
                                         aria-valuenow={pct}
                                         aria-valuemin={0}
                                         aria-valuemax={100}
-                                        aria-label={`Progresso da meta ${goal.name}`}
+                                        aria-label={t('dashboard.goals.progressOf', { name: goal.name })}
                                     >
                                         <span style={{ width: `${pct}%` }} />
                                     </div>
                                 </div>
                                 {days !== null && (
                                     <span className={styles.days}>
-                                        {days === 0 ? 'Vence hoje' : `${days} ${days === 1 ? 'dia restante' : 'dias restantes'}`}
+                                        {days === 0 ? t('dashboard.goals.dueToday') : tn('dashboard.goals.daysLeft', days)}
                                     </span>
                                 )}
                             </li>

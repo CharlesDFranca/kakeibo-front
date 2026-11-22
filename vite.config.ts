@@ -7,6 +7,16 @@ export default defineConfig({
     resolve: {
         alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
     },
-    // A API libera CORS só para http://localhost:5173
-    server: { port: 5173, strictPort: true },
+    server: {
+        port: 5173,
+        strictPort: true,
+        // Mesmo caminho de produção: /api/* vai para a API local (sem CORS nem cookie de outro site)
+        proxy: {
+            '/api': {
+                target: process.env.API_PROXY_TARGET ?? 'http://localhost:3000',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api/, ''),
+            },
+        },
+    },
 });

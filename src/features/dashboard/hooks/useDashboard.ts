@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { apiErrorMessage, t } from '@/shared/i18n';
 import { useAuth } from '@/features/auth/context/AuthContext';
 import { dashboardApi, type FinanceDashboard, type GoalSummary } from '../api/dashboard.api';
 import { rangeFor, type PeriodId } from '../periods';
@@ -24,7 +25,7 @@ export function useFinanceDashboard(period: PeriodId, reloadKey = 0) {
                     !cancelled &&
                     setState({
                         status: 'error',
-                        message: e instanceof Error ? e.message : 'Erro ao carregar o painel.',
+                        message: e instanceof Error ? apiErrorMessage(e) : t('dashboard.loadError'),
                     }),
             );
 
@@ -55,7 +56,7 @@ export function useGoalsDashboard(reloadKey = 0) {
                     !cancelled &&
                     setState({
                         status: 'error',
-                        message: e instanceof Error ? e.message : 'Erro ao carregar as metas.',
+                        message: e instanceof Error ? apiErrorMessage(e) : t('dashboard.goalsLoadError'),
                     }),
             );
 

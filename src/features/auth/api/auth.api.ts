@@ -8,6 +8,8 @@ export type CurrentUser = {
     username: string;
     plan: Plan;
     features: string[];
+    /** Tutoriais (um por tela) que o usuário já viu; registrado no backend, vale em qualquer navegador. */
+    seenTutorials: string[];
 };
 
 export type RegisterInput = {
@@ -27,6 +29,11 @@ export const authApi = {
         request<{ id: string }>('/users', { method: 'POST', body: input }),
 
     me: () => request<CurrentUser>('/users/me'),
+
+    markTutorialSeen: (tutorial: string) =>
+        request<{ seenTutorials: string[] }>('/users/me/tutorials', { method: 'PATCH', body: { tutorial } }),
+
+    resetTutorials: () => request<{ seenTutorials: string[] }>('/users/me/tutorials', { method: 'DELETE' }),
 
     changePlan: (plan: Plan) =>
         request<{ plan: Plan }>('/users/me/plan', { method: 'PATCH', body: { plan } }),

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { apiErrorMessage } from '@/shared/api/error-messages';
+import { apiErrorMessage } from '@/shared/i18n';
 
 export type AsyncState<T> =
     | { status: 'loading' }

@@ -1,18 +1,14 @@
+import { t } from '@/shared/i18n';
 import type { Goal, GoalStatus } from './api/goals.api';
 
-export const STATUS_LABEL: Record<GoalStatus, string> = {
-    'IN PROGRESS': 'Em andamento',
-    COMPLETED: 'Concluída',
-    EXPIRED: 'Expirada',
-    CANCELLED: 'Cancelada',
-};
+export const statusLabel = (status: GoalStatus): string => t(`goals.status.${status}`);
 
-export const STATUS_FILTERS: { value: GoalStatus | ''; label: string }[] = [
-    { value: '', label: 'Todas' },
-    { value: 'IN PROGRESS', label: 'Em andamento' },
-    { value: 'COMPLETED', label: 'Concluídas' },
-    { value: 'EXPIRED', label: 'Expiradas' },
-    { value: 'CANCELLED', label: 'Canceladas' },
+export const statusFilters = (): { value: GoalStatus | ''; label: string }[] => [
+    { value: '', label: t('goals.filter.all') },
+    { value: 'IN PROGRESS', label: t('goals.filter.inProgress') },
+    { value: 'COMPLETED', label: t('goals.filter.completed') },
+    { value: 'EXPIRED', label: t('goals.filter.expired') },
+    { value: 'CANCELLED', label: t('goals.filter.cancelled') },
 ];
 
 /** Percentual 0–100 do valor-alvo já alcançado. */

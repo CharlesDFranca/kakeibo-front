@@ -33,6 +33,12 @@
     font-weight: 600;
     font-size: 0.875rem;
     cursor: pointer;
+    appearance: none;
+    padding-right: 2.5rem;
+    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position: calc(100% - 1.375rem) 50%, calc(100% - 1.0625rem) 50%;
+    background-size: 0.3125rem 0.3125rem, 0.3125rem 0.3125rem;
+    background-repeat: no-repeat;
 }
 
 .select select:focus-visible {

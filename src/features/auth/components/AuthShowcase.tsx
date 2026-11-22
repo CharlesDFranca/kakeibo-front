@@ -1,3 +1,4 @@
+import { t } from '@/shared/i18n';
 import styles from './AuthShowcase.module.css';
 
 /** Painel decorativo inspirado no dashboard de referência. */
@@ -5,17 +6,14 @@ export function AuthShowcase() {
     return (
         <div className={styles.root}>
             <div className={styles.copy}>
-                <h2 className={styles.headline}>Seu dinheiro, com clareza.</h2>
-                <p className={styles.text}>
-                    Carteiras, transações e metas em um só lugar. Inspirado no
-                    kakeibo, o método japonês de controle financeiro.
-                </p>
+                <h2 className={styles.headline}>{t('auth.showcase.headline')}</h2>
+                <p className={styles.text}>{t('auth.showcase.text')}</p>
             </div>
 
             <div className={styles.overview}>
                 <div className={styles.overviewHead}>
-                    <span>Visão geral</span>
-                    <span className={styles.chip}>Mensal</span>
+                    <span>{t('auth.showcase.overview')}</span>
+                    <span className={styles.chip}>{t('auth.showcase.monthly')}</span>
                 </div>
 
                 <svg
@@ -45,15 +43,15 @@ export function AuthShowcase() {
 
                 <div className={styles.stats}>
                     <div>
-                        <span className={styles.statLabel}>Receitas</span>
+                        <span className={styles.statLabel}>{t('auth.showcase.income')}</span>
                         <strong>R$ 8.450</strong>
                     </div>
                     <div className={styles.statMain}>
-                        <span className={styles.statLabel}>Saldo total</span>
+                        <span className={styles.statLabel}>{t('auth.showcase.totalBalance')}</span>
                         <strong>R$ 12.980</strong>
                     </div>
                     <div>
-                        <span className={styles.statLabel}>Despesas</span>
+                        <span className={styles.statLabel}>{t('auth.showcase.expenses')}</span>
                         <strong>R$ 3.120</strong>
                     </div>
                 </div>
@@ -61,15 +59,15 @@ export function AuthShowcase() {
 
             <div className={styles.row}>
                 <div className={styles.goal}>
-                    <span className={styles.statLabel}>Meta: Viagem</span>
+                    <span className={styles.statLabel}>{t('auth.showcase.goal')}</span>
                     <div className={styles.bar}>
                         <span style={{ width: '72%' }} />
                     </div>
-                    <small>72% concluída</small>
+                    <small>{t('auth.showcase.goalDone')}</small>
                 </div>
                 <div className={styles.pill}>
-                    <span className={styles.statLabel}>Transferência</span>
-                    <strong>Nubank → Reserva</strong>
+                    <span className={styles.statLabel}>{t('auth.showcase.transfer')}</span>
+                    <strong>{t('auth.showcase.transferExample')}</strong>
                 </div>
             </div>
         </div>

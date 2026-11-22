@@ -7,12 +7,14 @@ type Props = {
     tone?: 'surface' | 'brand' | 'accent';
     children: ReactNode;
     className?: string;
+    /** Âncora do tutorial (data-tour). */
+    tour?: string;
 };
 
 /** Cartão base do painel; o tom vem do tema (surface / brand / accent). */
-export function Card({ title, action, tone = 'surface', children, className }: Props) {
+export function Card({ title, action, tone = 'surface', children, className, tour }: Props) {
     return (
-        <section className={`${styles.card} ${styles[tone]} ${className ?? ''}`}>
+        <section className={`${styles.card} ${styles[tone]} ${className ?? ''}`} data-tour={tour}>
             {(title || action) && (
                 <header className={styles.header}>
                     {title && <h2 className={styles.title}>{title}</h2>}

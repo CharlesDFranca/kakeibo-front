@@ -1,13 +1,31 @@
+import { t } from '@/shared/i18n';
+
 export type PeriodId = 'this-month' | 'last-month' | 'last-30-days' | 'this-year';
 
 export type DateRange = { startDate: string; endDate: string };
 
-export const PERIODS: { id: PeriodId; label: string }[] = [
-    { id: 'this-month', label: 'Este mês' },
-    { id: 'last-month', label: 'Mês passado' },
-    { id: 'last-30-days', label: 'Últimos 30 dias' },
-    { id: 'this-year', label: 'Este ano' },
+/** Opções de período no idioma atual (avaliado a cada chamada). */
+export const periods = (): { id: PeriodId; label: string }[] => [
+    { id: 'this-month', label: t('dashboard.period.thisMonth') },
+    { id: 'last-month', label: t('dashboard.period.lastMonth') },
+    { id: 'last-30-days', label: t('dashboard.period.last30Days') },
+    { id: 'this-year', label: t('dashboard.period.thisYear') },
 ];
+
+/** Compatibilidade: rótulos resolvidos na leitura, então seguem o idioma atual. */
+export const PERIODS: { id: PeriodId; label: string }[] = (
+    [
+        ['this-month', 'dashboard.period.thisMonth'],
+        ['last-month', 'dashboard.period.lastMonth'],
+        ['last-30-days', 'dashboard.period.last30Days'],
+        ['this-year', 'dashboard.period.thisYear'],
+    ] as const
+).map(([id, key]) => ({
+    id,
+    get label() {
+        return t(key);
+    },
+}));
 
 export const DEFAULT_PERIOD: PeriodId = 'this-month';
 

@@ -1,9 +1,10 @@
+import { t } from '@/shared/i18n';
 import { Skeleton } from '@/shared/ui';
 import styles from '../DashboardPage.module.css';
 
 export function DashboardSkeleton() {
     return (
-        <div className={styles.grid} aria-busy="true" aria-label="Carregando painel">
+        <div className={styles.grid} aria-busy="true" aria-label={t('dashboard.loading')}>
             <div className={styles.main}>
                 <Skeleton height={380} radius="var(--radius-xl)" />
                 <div className={styles.summaries}>

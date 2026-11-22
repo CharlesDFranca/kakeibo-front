@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { apiErrorMessage } from '@/shared/api/error-messages';
 import { formatCurrency } from '@/shared/format/format';
+import { apiErrorMessage, t } from '@/shared/i18n';
 import { PageHeader } from '@/shared/layout/PageHeader';
 import { Alert, Button, ConfirmDialog, EmptyState, LockedFeature, PlusIcon, Skeleton, SwapIcon, useToast } from '@/shared/ui';
 import { Card } from '@/features/dashboard/components/Card';
@@ -13,10 +13,10 @@ import { TransferFormModal } from './components/TransferFormModal';
 import { useTransfers } from './hooks/useTransfers';
 import styles from './TransfersPage.module.css';
 
-const FILTERS: { value: TransferStatus | ''; label: string }[] = [
-    { value: '', label: 'Todas' },
-    { value: 'COMPLETED', label: 'Concluídas' },
-    { value: 'REVERTED', label: 'Revertidas' },
+const filters = (): { value: TransferStatus | ''; label: string }[] => [
+    { value: '', label: t('transfers.filter.all') },
+    { value: 'COMPLETED', label: t('transfers.filter.completed') },
+    { value: 'REVERTED', label: t('transfers.filter.reverted') },
 ];
 
 /** Transferências exigem o plano Plus ou Pro; sem ele mostramos o bloqueio e não chamamos a API. */
@@ -26,12 +26,12 @@ export function TransfersPage() {
     if (!allowed) {
         return (
             <>
-                <PageHeader eyebrow="Movimentações" title="Transferências" />
+                <PageHeader eyebrow={t('transfers.eyebrow')} title={t('transfers.title')} />
                 <Card>
                     <LockedFeature
-                        feature="Transferências entre carteiras"
+                        feature={t('transfers.locked.feature')}
                         plan="Plus"
-                        description="Mova dinheiro entre suas carteiras e reverta quando precisar."
+                        description={t('transfers.locked.description')}
                     />
                 </Card>
             </>
@@ -55,7 +55,7 @@ function TransfersContent() {
 
     function handleSaved() {
         setCreating(false);
-        toast('Transferência realizada.');
+        toast(t('transfers.toast.done'));
         reload();
         wallets.reload();
     }
@@ -64,7 +64,7 @@ function TransfersContent() {
         setReverting(true);
         try {
             await transfersApi.revert(transfer.id);
-            toast('Transferência revertida.');
+            toast(t('transfers.toast.reverted'));
             reload();
             wallets.reload();
         } catch (error) {
@@ -81,17 +81,17 @@ function TransfersContent() {
     }
 
     const newButton = (
-        <Button onClick={() => setCreating(true)}>
-            <PlusIcon size={18} /> Nova transferência
+        <Button onClick={() => setCreating(true)} data-tour="new-transfer">
+            <PlusIcon size={18} /> {t('transfers.new')}
         </Button>
     );
 
     return (
         <>
-            <PageHeader eyebrow="Movimentações" title="Transferências" actions={newButton} />
+            <PageHeader eyebrow={t('transfers.eyebrow')} title={t('transfers.title')} actions={newButton} />
 
-            <div className={styles.tabs} role="group" aria-label="Filtrar por situação">
-                {FILTERS.map((f) => (
+            <div className={styles.tabs} role="group" aria-label={t('transfers.filters.aria')} data-tour="transfer-filters">
+                {filters().map((f) => (
                     <button
                         key={f.value}
                         type="button"
@@ -110,45 +110,45 @@ function TransfersContent() {
                 <div className={styles.error}>
                     <Alert tone="danger">{state.message}</Alert>
                     <Button variant="ghost" onClick={reload}>
-                        Tentar novamente
+                        {t('transfers.retry')}
                     </Button>
                 </div>
             )}
 
             {state.status === 'ready' && (
-                <Card>
+                <Card tour="transfer-list">
                     {state.data.length === 0 ? (
                         <EmptyState
                             icon={<SwapIcon size={26} />}
-                            title={status ? 'Nenhuma transferência com esta situação' : 'Nenhuma transferência ainda'}
+                            title={status ? t('transfers.empty.filtered.title') : t('transfers.empty.title')}
                             action={status ? undefined : newButton}
                         >
-                            {status ? 'Troque o filtro para ver as demais.' : 'Mova dinheiro entre suas carteiras, como da conta para a reserva.'}
+                            {status ? t('transfers.empty.filtered.text') : t('transfers.empty.text')}
                         </EmptyState>
                     ) : (
                         <ul className={styles.list} aria-busy={state.refreshing}>
                             {[...state.data]
                                 .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-                                .map((t) => (
-                                    <li key={t.id} className={styles.row}>
-                                        <button type="button" className={styles.open} onClick={() => setDetailId(t.id)}>
+                                .map((tr) => (
+                                    <li key={tr.id} className={styles.row}>
+                                        <button type="button" className={styles.open} onClick={() => setDetailId(tr.id)} data-tour="transfer-open">
                                             <span className={styles.icon}>
                                                 <SwapIcon size={18} />
                                             </span>
                                             <span className={styles.info}>
                                                 <strong>
-                                                    {t.sourceWallet.name} → {t.destinationWallet.name}
+                                                    {tr.sourceWallet.name} → {tr.destinationWallet.name}
                                                 </strong>
-                                                <span>{formatDateTime(t.createdAt)}</span>
+                                                <span>{formatDateTime(tr.createdAt)}</span>
                                             </span>
-                                            <span className={`${styles.amount} ${t.status === 'REVERTED' ? styles.struck : ''}`}>
-                                                {formatCurrency(t.amount)}
+                                            <span className={`${styles.amount} ${tr.status === 'REVERTED' ? styles.struck : ''}`}>
+                                                {formatCurrency(tr.amount)}
                                             </span>
-                                            <StatusBadge status={t.status} />
+                                            <StatusBadge status={tr.status} />
                                         </button>
-                                        {t.status === 'COMPLETED' ? (
-                                            <Button variant="ghost" onClick={() => setToRevert(t)} aria-label={`Reverter transferência de ${t.sourceWallet.name} para ${t.destinationWallet.name}`}>
-                                                Reverter
+                                        {tr.status === 'COMPLETED' ? (
+                                            <Button variant="ghost" onClick={() => setToRevert(tr)} data-tour="transfer-revert" aria-label={t('transfers.revert.aria', { source: tr.sourceWallet.name, destination: tr.destinationWallet.name })}>
+                                                {t('transfers.revert')}
                                             </Button>
                                         ) : (
                                             <span className={styles.revertSpace} />
@@ -166,14 +166,19 @@ function TransfersContent() {
 
             {toRevert && (
                 <ConfirmDialog
-                    title="Reverter transferência"
-                    confirmLabel="Reverter"
+                    title={t('transfers.revert.title')}
+                    confirmLabel={t('transfers.revert')}
                     loading={reverting}
                     onCancel={() => setToRevert(null)}
                     onConfirm={() => void confirmRevert(toRevert)}
                 >
-                    Devolver <strong>{formatCurrency(toRevert.amount)}</strong> de <strong>{toRevert.destinationWallet.name}</strong> para{' '}
-                    <strong>{toRevert.sourceWallet.name}</strong>? Se a carteira de destino não tiver saldo suficiente, a reversão será recusada.
+                    {t('transfers.revert.confirm.a')}
+                    <strong>{formatCurrency(toRevert.amount)}</strong>
+                    {t('transfers.revert.confirm.b')}
+                    <strong>{toRevert.destinationWallet.name}</strong>
+                    {t('transfers.revert.confirm.c')}
+                    <strong>{toRevert.sourceWallet.name}</strong>
+                    {t('transfers.revert.confirm.d')}
                 </ConfirmDialog>
             )}
         </>

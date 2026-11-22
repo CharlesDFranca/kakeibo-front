@@ -1,3 +1,4 @@
+import { t } from '@/shared/i18n';
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ApiError } from '@/shared/api/api-error';
@@ -65,11 +66,11 @@ export function RegisterPage() {
 
     return (
         <AuthLayout
-            title="Crie sua conta"
-            subtitle="Leva menos de um minuto."
+            title={t('auth.register.title')}
+            subtitle={t('auth.register.subtitle')}
             footer={
                 <>
-                    Já tem conta? <Link to="/login">Entrar</Link>
+                    {t('auth.register.hasAccount')} <Link to="/login">{t('auth.register.signIn')}</Link>
                 </>
             }
         >
@@ -77,51 +78,51 @@ export function RegisterPage() {
                 {formError && <Alert tone="danger">{formError}</Alert>}
 
                 <TextField
-                    label="Nome (opcional)"
+                    label={t('auth.register.name')}
                     autoComplete="name"
-                    placeholder="Como quer ser chamado"
+                    placeholder={t('auth.register.namePlaceholder')}
                     value={values.name}
                     onChange={set('name')}
                 />
                 <TextField
-                    label="Nome de usuário"
+                    label={t('auth.register.username')}
                     autoComplete="username"
-                    placeholder="seu.usuario"
+                    placeholder={t('auth.register.usernamePlaceholder')}
                     value={values.username}
                     onChange={set('username')}
                     error={errors.username}
                 />
                 <TextField
-                    label="E-mail"
+                    label={t('auth.register.email')}
                     type="email"
                     autoComplete="email"
-                    placeholder="voce@exemplo.com"
+                    placeholder={t('auth.register.emailPlaceholder')}
                     value={values.email}
                     onChange={set('email')}
                     error={errors.email}
                 />
                 <TextField
-                    label="Senha"
+                    label={t('auth.register.password')}
                     type="password"
                     autoComplete="new-password"
-                    placeholder="Crie uma senha"
-                    hint={`Mínimo de ${PASSWORD_MIN_LENGTH} caracteres.`}
+                    placeholder={t('auth.register.passwordPlaceholder')}
+                    hint={t('auth.register.passwordHint', { min: PASSWORD_MIN_LENGTH })}
                     value={values.password}
                     onChange={set('password')}
                     error={errors.password}
                 />
                 <TextField
-                    label="Confirmar senha"
+                    label={t('auth.register.confirm')}
                     type="password"
                     autoComplete="new-password"
-                    placeholder="Repita a senha"
+                    placeholder={t('auth.register.confirmPlaceholder')}
                     value={values.confirmPassword}
                     onChange={set('confirmPassword')}
                     error={errors.confirmPassword}
                 />
 
                 <Button type="submit" fullWidth loading={submitting}>
-                    Criar conta
+                    {t('auth.register.submit')}
                 </Button>
             </form>
         </AuthLayout>
