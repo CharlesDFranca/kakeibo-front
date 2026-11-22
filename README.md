@@ -11,7 +11,7 @@ Front-end do Kakeibo, aplicativo de gerenciamento financeiro pessoal, desenvolvi
 
 ## O que é o Kakeibo
 
-**Kakeibo (家計簿)** significa "livro de contas da casa". É um método japonês de organização financeira criado em 1904 por Hani Motoko, a primeira jornalista mulher do Japão, e até hoje comum nos lares do país. Em vez de só somar gastos, ele pede que a pessoa registre cada movimentação à mão e *reflita* sobre ela, para criar consciência sobre o próprio dinheiro.
+**Kakeibo (家計簿)** significa "livro de contas da casa". É um método japonês de organização financeira criado em 1904 por Hani Motoko, a primeira jornalista mulher do Japão, e até hoje comum nos lares do país. Em vez de só somar gastos, ele pede que a pessoa registre cada movimentação à mão e _reflita_ sobre ela, para criar consciência sobre o próprio dinheiro.
 
 O método gira em torno de quatro perguntas, feitas todo mês:
 
@@ -120,17 +120,17 @@ Cada feature segue a mesma divisão: `api/`, `components/`, `hooks/` e a página
 
 ### Rotas
 
-| Rota | Tela | Plano |
-|---|---|---|
-| `/login`, `/cadastro` | Autenticação | — |
-| `/` | Painel | Free |
-| `/carteiras` | Carteiras | Free |
-| `/transacoes` | Transações | Free |
-| `/transferencias` | Transferências | Plus / Pro |
-| `/metas`, `/metas/:id` | Metas e detalhe | Pro |
-| `/notificacoes` | Notificações | Pro |
-| `/planos` | Planos | Free |
-| `/perfil` | Perfil | Free |
+| Rota                   | Tela            | Plano      |
+| ---------------------- | --------------- | ---------- |
+| `/login`, `/cadastro`  | Autenticação    | —          |
+| `/`                    | Painel          | Free       |
+| `/carteiras`           | Carteiras       | Free       |
+| `/transacoes`          | Transações      | Free       |
+| `/transferencias`      | Transferências  | Plus / Pro |
+| `/metas`, `/metas/:id` | Metas e detalhe | Pro        |
+| `/notificacoes`        | Notificações    | Pro        |
+| `/planos`              | Planos          | Free       |
+| `/perfil`              | Perfil          | Free       |
 
 ---
 
@@ -191,11 +191,11 @@ Cada feature segue a mesma divisão: `api/`, `components/`, `hooks/` e a página
 
 O espelho da Tabela 28 da API fica em `features/plans/plans.ts`, só para exibição. As telas decidem o que mostrar com `useHasFeature` (`features/auth/hooks.ts`), o jeito padrão de checar o plano.
 
-| Recurso | Free | Plus | Pro |
-|---|---|---|---|
-| Painel, carteiras e transações | ✔ | ✔ | ✔ |
-| Despesas por categoria e transferências | — | ✔ | ✔ |
-| Metas e notificações | — | — | ✔ |
+| Recurso                                 | Free | Plus | Pro |
+| --------------------------------------- | ---- | ---- | --- |
+| Painel, carteiras e transações          | ✔    | ✔    | ✔   |
+| Despesas por categoria e transferências | —    | ✔    | ✔   |
+| Metas e notificações                    | —    | —    | ✔   |
 
 Trocar de plano abre uma confirmação que lista o que se ganha e o que se perde, e `AuthContext.changePlan` recarrega o usuário, então menu, telas e bloqueios atualizam na hora. Rebaixar mantém os dados; só bloqueia as telas do plano perdido.
 
@@ -252,11 +252,11 @@ theme
 
 ### Temas disponíveis
 
-| Tipo | Temas |
-|---|---|
-| Escuros | Ameixa (padrão), Vinho, Lagoa, Noturno |
-| Claros | Névoa, Maré, Carmim, Musgo |
-| Acessibilidade | Alto contraste |
+| Tipo           | Temas                                  |
+| -------------- | -------------------------------------- |
+| Escuros        | Ameixa (padrão), Vinho, Lagoa, Noturno |
+| Claros         | Névoa, Maré, Carmim, Musgo             |
+| Acessibilidade | Alto contraste                         |
 
 A escolha fica em **Perfil → Aparência** e é guardada em `localStorage` (`kakeibo:theme`).
 
@@ -362,10 +362,10 @@ cp .env.example .env
 
 `VITE_API_URL` deve ficar **vazio**: a API é chamada em `/api` e o Vite repassa para `localhost:3000` (veja [Integração com a API e cookie de sessão](#integração-com-a-api-e-cookie-de-sessão)).
 
-| Variável | Onde | Descrição |
-|---|---|---|
-| `VITE_API_URL` | front | Vazio por padrão. Só defina para chamar a API direto, sem o proxy |
-| `API_PROXY_TARGET` | Vite (dev) | Destino do proxy `/api` (padrão `http://localhost:3000`) |
+| Variável           | Onde       | Descrição                                                         |
+| ------------------ | ---------- | ----------------------------------------------------------------- |
+| `VITE_API_URL`     | front      | Vazio por padrão. Só defina para chamar a API direto, sem o proxy |
+| `API_PROXY_TARGET` | Vite (dev) | Destino do proxy `/api` (padrão `http://localhost:3000`)          |
 
 ### Inicie a aplicação
 
@@ -378,18 +378,18 @@ A aplicação fica em `http://localhost:5173`.
 
 ### Scripts
 
-| Comando | O que faz |
-|---|---|
-| `npm run dev` | Servidor de desenvolvimento com proxy para a API |
-| `npm run build` | Verifica os tipos e gera o build de produção em `dist` |
-| `npm run preview` | Serve o build localmente |
-| `npm run typecheck` | Só a verificação de tipos |
-| `npm test` | Roda todos os testes uma vez (Vitest) |
-| `npm run test:watch` | Testes em modo observação |
-| `npm run test:coverage` | Testes com relatório de cobertura |
-| `npm run typecheck:tests` | Verifica os tipos dos arquivos de teste |
-| `npm run lint` | ESLint |
-| `npm run format` / `format:check` | Prettier (aplica / só confere) |
+| Comando                           | O que faz                                              |
+| --------------------------------- | ------------------------------------------------------ |
+| `npm run dev`                     | Servidor de desenvolvimento com proxy para a API       |
+| `npm run build`                   | Verifica os tipos e gera o build de produção em `dist` |
+| `npm run preview`                 | Serve o build localmente                               |
+| `npm run typecheck`               | Só a verificação de tipos                              |
+| `npm test`                        | Roda todos os testes uma vez (Vitest)                  |
+| `npm run test:watch`              | Testes em modo observação                              |
+| `npm run test:coverage`           | Testes com relatório de cobertura                      |
+| `npm run typecheck:tests`         | Verifica os tipos dos arquivos de teste                |
+| `npm run lint`                    | ESLint                                                 |
+| `npm run format` / `format:check` | Prettier (aplica / só confere)                         |
 
 ### Testes e qualidade
 

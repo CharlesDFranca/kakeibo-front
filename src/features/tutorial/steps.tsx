@@ -3,19 +3,101 @@ import { t } from '@/shared/i18n';
 import type { Screen, ScreenId, TourStep } from './types';
 
 export const SCREENS: Record<ScreenId, Screen> = {
-    dashboard: { id: 'dashboard', get label() { return t('tutorial.screen.dashboard'); }, route: '/', icon: <HomeIcon size={20} /> },
-    wallets: { id: 'wallets', get label() { return t('tutorial.screen.wallets'); }, route: '/carteiras', icon: <WalletIcon size={20} /> },
-    transactions: { id: 'transactions', get label() { return t('tutorial.screen.transactions'); }, route: '/transacoes', icon: <ListIcon size={20} /> },
-    transfers: { id: 'transfers', get label() { return t('tutorial.screen.transfers'); }, route: '/transferencias', icon: <SwapIcon size={20} />, feature: 'TRANSFERS', minPlan: 'Plus' },
-    goals: { id: 'goals', get label() { return t('tutorial.screen.goals'); }, route: '/metas', icon: <TargetIcon size={20} />, feature: 'GOALS', minPlan: 'Pro' },
-    goal: { id: 'goal', get label() { return t('tutorial.screen.goal'); }, route: '/metas', icon: <TargetIcon size={20} />, feature: 'GOALS', minPlan: 'Pro', hideWhenLocked: true },
-    notifications: { id: 'notifications', get label() { return t('tutorial.screen.notifications'); }, route: '/notificacoes', icon: <BellIcon size={20} />, feature: 'NOTIFICATIONS', minPlan: 'Pro' },
-    plans: { id: 'plans', get label() { return t('tutorial.screen.plans'); }, route: '/planos', icon: <StarIcon size={20} /> },
-    profile: { id: 'profile', get label() { return t('tutorial.screen.profile'); }, route: '/perfil', icon: <UserIcon size={20} /> },
+    dashboard: {
+        id: 'dashboard',
+        get label() {
+            return t('tutorial.screen.dashboard');
+        },
+        route: '/',
+        icon: <HomeIcon size={20} />,
+    },
+    wallets: {
+        id: 'wallets',
+        get label() {
+            return t('tutorial.screen.wallets');
+        },
+        route: '/carteiras',
+        icon: <WalletIcon size={20} />,
+    },
+    transactions: {
+        id: 'transactions',
+        get label() {
+            return t('tutorial.screen.transactions');
+        },
+        route: '/transacoes',
+        icon: <ListIcon size={20} />,
+    },
+    transfers: {
+        id: 'transfers',
+        get label() {
+            return t('tutorial.screen.transfers');
+        },
+        route: '/transferencias',
+        icon: <SwapIcon size={20} />,
+        feature: 'TRANSFERS',
+        minPlan: 'Plus',
+    },
+    goals: {
+        id: 'goals',
+        get label() {
+            return t('tutorial.screen.goals');
+        },
+        route: '/metas',
+        icon: <TargetIcon size={20} />,
+        feature: 'GOALS',
+        minPlan: 'Pro',
+    },
+    goal: {
+        id: 'goal',
+        get label() {
+            return t('tutorial.screen.goal');
+        },
+        route: '/metas',
+        icon: <TargetIcon size={20} />,
+        feature: 'GOALS',
+        minPlan: 'Pro',
+        hideWhenLocked: true,
+    },
+    notifications: {
+        id: 'notifications',
+        get label() {
+            return t('tutorial.screen.notifications');
+        },
+        route: '/notificacoes',
+        icon: <BellIcon size={20} />,
+        feature: 'NOTIFICATIONS',
+        minPlan: 'Pro',
+    },
+    plans: {
+        id: 'plans',
+        get label() {
+            return t('tutorial.screen.plans');
+        },
+        route: '/planos',
+        icon: <StarIcon size={20} />,
+    },
+    profile: {
+        id: 'profile',
+        get label() {
+            return t('tutorial.screen.profile');
+        },
+        route: '/perfil',
+        icon: <UserIcon size={20} />,
+    },
 };
 
 /** Ordem em que os tutoriais aparecem na lista do Perfil. */
-export const TUTORIAL_ORDER: ScreenId[] = ['dashboard', 'wallets', 'transactions', 'transfers', 'goals', 'goal', 'notifications', 'plans', 'profile'];
+export const TUTORIAL_ORDER: ScreenId[] = [
+    'dashboard',
+    'wallets',
+    'transactions',
+    'transfers',
+    'goals',
+    'goal',
+    'notifications',
+    'plans',
+    'profile',
+];
 
 /** Qual tutorial pertence a cada caminho do app (null = nenhum). */
 export function tutorialForPath(pathname: string): ScreenId | null {
@@ -325,7 +407,15 @@ export function buildSteps(features: string[]): TourStep[] {
         if (screen.hideWhenLocked || seenLocked.has(screen.id)) continue;
         seenLocked.add(screen.id);
         // só uma caixa central, com o aviso do plano
-        steps.push({ id: `${screen.id}-locked`, screen: step.screen, route: step.route, title: screen.label, text: LOCKED_TEXT(screen), locked: true, minPlan: screen.minPlan });
+        steps.push({
+            id: `${screen.id}-locked`,
+            screen: step.screen,
+            route: step.route,
+            title: screen.label,
+            text: LOCKED_TEXT(screen),
+            locked: true,
+            minPlan: screen.minPlan,
+        });
     }
     return steps;
 }
